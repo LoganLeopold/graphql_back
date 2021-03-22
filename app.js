@@ -10,4 +10,4 @@ app.get('/', (req,res) => {
 })
 
 app.set('port', process.env.PORT || 8000)
-app.listen(app.get('port'), () => console.log(`locked and loaded on ${app.get('port')}`))
+app.listen(app.get('port'), () => console.log(`locked and loaded on ${app.get('port')}`), process.env.URI)
