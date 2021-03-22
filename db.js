@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const db = mongoose.connect(process.env.URI)
+mongoose.connect(process.env.URI).then(response => console.log(response)).catch( err => console.log(err))
 
 mongoose.Promise = Promise
 
