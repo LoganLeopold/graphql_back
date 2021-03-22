@@ -9,10 +9,6 @@ app.use(cors())
 app.use(require('./routes/routes'))
 
 app.get('/', (req,res) => {
-    var test = 'null'
-    if (process.env.URI) {
-        test = process.env.URI
-    }
     res.send("Hello world!")
 })
 

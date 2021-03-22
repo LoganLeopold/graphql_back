@@ -5,6 +5,7 @@ module.exports = {
     list: async (req,res) => {
         let actors = await Actor.find({})
         console.log(actors)
+        res.send("Finished, test")
     }
 
 
