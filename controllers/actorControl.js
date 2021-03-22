@@ -6,7 +6,13 @@ module.exports = {
         let actors = await Actor.find({})
         console.log(actors)
         res.send("Finished, test")
-    }
+    },
 
+    create: async(req,res) => {
+        Actor.create({
+            Name: req.body.name,
+            Movies: []
+        }).then( console.log("added"))
+    }
 
 }
