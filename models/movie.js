@@ -14,6 +14,15 @@ const Movie = new Schema({
             ref: 'Actor'
         }
     ],
+    Platforms: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Platform'
+        }
+    ],
+    TomatoPublic: Number,
+    TomatoCritic: Number,
+    Genres: [],
 
 })
 

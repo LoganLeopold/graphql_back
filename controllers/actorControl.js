@@ -8,11 +8,14 @@ module.exports = {
         res.send(actors)
     },
 
-    create: async(req,res) => {
+    create: async (req,res) => {
         Actor.create({
             Name: req.body.name,
             Movies: []
-        }).then( res.redirect('http://localhost:3000'))
+        }).then( () => {
+            console.log(req.body.name)
+            res.redirect('http://localhost:3000')
+        })
         // console.log(req.body)
     }
 

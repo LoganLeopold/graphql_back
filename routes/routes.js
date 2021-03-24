@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 
 router.use('/actor', require('./actorRoutes.js'));
-// router.use('/job', require('./jobRoutes'));
+// router.use('/director', require(''));
+// router.use('/movie', require('./'));
+// router.use('/platform', require('./'));
 
 module.exports = router
