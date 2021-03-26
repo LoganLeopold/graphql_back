@@ -14,9 +14,9 @@ module.exports = {
             Movies: []
         }).then( () => {
             console.log(req.body.name)
-            res.redirect('http://localhost:3000')
+            res.send('http://localhost:3000')
         })
-        // console.log(req.body)
+        
     }
 
 }
