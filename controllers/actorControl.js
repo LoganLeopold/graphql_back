@@ -9,14 +9,11 @@ module.exports = {
     },
 
     create: async (req,res) => {
-        Actor.create({
+        let actor = await Actor.create({
             Name: req.body.name,
             Movies: []
-        }).then( () => {
-            console.log(req.body.name)
-            res.send('http://localhost:3000')
         })
-        
+        res.send(actor)
     }
 
 }
