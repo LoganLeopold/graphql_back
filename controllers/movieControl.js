@@ -13,6 +13,7 @@ module.exports = {
 
         const { 
             name, 
+            director,
             actors, 
             platforms, 
             tom_pub, 
@@ -20,31 +21,37 @@ module.exports = {
             genres
         } = req.body;
 
-        let actorSplits = actors.trim().split(",")
-        let platformSplits = genres.trim().split(",")
-        let genreSplits = genres.trim().split(",")
+        console.log(name)
 
+        // let actorSplits = actors.trim().split(",")
+        // let platformSplits = genres.trim().split(",")
+        // let genreSplits = genres.trim().split(",")
+
+        console.log(req)
         try {   
 
             //Create Movie
             let movie = await Movie.create({
                 Name: name,
+                Director: director,
                 Actors: [],
                 Platforms: [],
-                TomatoPublic: tom_pub,
-                TomatoCritic: tom_crit,
+                TomatoPublic: pub,
+                TomatoCritic: crit,
                 Genres: [],
             })
 
-            actorSplits.forEach( actor => {
+            
+            // actorSplits.forEach( actor => {
 
-                let name = actor.trim()
-                let actorDoc = await Actor.findOneAndUpdate({name: name})
+            //     let name = actor.trim()
+            //     let actorDoc = await Actor.findOneAndUpdate({name: name})
 
-            })
+            // })
+            res.send(movie)
 
         } catch (err) {
-
+            console.log(err)
         }
     }
 
