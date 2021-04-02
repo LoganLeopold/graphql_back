@@ -13,6 +13,20 @@ module.exports = {
 
     create: async (req, res) => {
 
+        /*
+
+        Movie to DB Pseudocode
+
+        1. Get values from req.body
+        2. Does movie exist? 
+        3. Establish IDs for use 
+            -explicit for movieID + directorID
+            -dynamic for actors + platforms
+        4. Make and return movie
+        
+        */ 
+
+        // 1
         const { 
             name, 
             director,
@@ -25,27 +39,14 @@ module.exports = {
 
         try {   
 
-            /*
-
-            Movie to DB Pseudocode
-
-            1. Does movie exist? 
-            2. Get values from req.body (above)
-            3. Establish IDs for use 
-                -explicit for movieID + directorID
-                -dynamic for actors + platforms
-            4. Establish arrays of objects writbale to MongoDB with new objectIds
-            
-            */ 
-           
-           // 1
+           // 2
            let movie = await Movie.findOne({Name: name.trim()})
 
            if (!movie) {
 
                let movieID = !movie ? mongoose.Types.ObjectId() : movie._id
     
-               // 2
+               // 3
                let directorIns = await Director.findOne(({
                    Name: director.trim()
                }))
@@ -74,6 +75,7 @@ module.exports = {
                    return genre.trim()
                })
                 
+               // 4
                let movieNew = Movie.create({
                     Name: name.trim(),
                     Director: directorID,
@@ -83,51 +85,12 @@ module.exports = {
                     TomatoCritic: tom_crit,
                     Genres: genreArr
                })
-           }
 
+               res.send(movieNew)
 
-            // Below here is original try 
-
-            //Create Movie
-                // var movie = null;
-                // let check = await Movie.findOne({Name: name})
-
-            // Thinking about creating all of the document objects first so I have accurate IDs and then inserting them/creating them dynamically using objectIDs
-
-                // if (!check) {
-
-                //     let genresInsert = genres.split(',').map( genre =>  genre.trim() )
-
-                //     let actorsInsert = actors.split(',').map( actor => actor.trim() )
-
-                //     let platformsInsert = platforms.split(',').map( platform => platform.trim() )
-
-                //     var movie = await Movie.create({
-                //         Name: name,
-                //         // Director: director,
-                //         Actors: [],
-                //         Platforms: [],
-                //         TomatoPublic: parseInt(tom_pub),
-                //         TomatoCritic: parseInt(tom_crit),
-                //         Genres: genresInsert,
-                //     }) 
-
-                //     let directorUpsert = await Director.findOneAndUpdate(
-                //         {Name: director},
-                //         {$push: {Movies: movie._id}},
-                //         {$upsert: true})
-
-                //     actorsInsert.forEach( actor => {
-                //         let actor = await Actor.findOneAndUpdate(
-                //             {Name: actor}, 
-                //             {$push: {Movies: movie._id}},
-                //             {$upsert: true}
-                //         )
-                //     })
-
-
-
-                // }
+            } else {
+                res.send("This movie already exists in the database")
+            }
 
         } catch (err) {
             console.log(err)
