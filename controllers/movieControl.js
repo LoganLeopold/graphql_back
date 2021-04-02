@@ -37,26 +37,6 @@ module.exports = {
             genres
         } = req.body;
 
-        async function getActor(actor, movieID) {
-            let actorIns = await Actor.findOneAndUpdate(
-                {Name: actor.trim()}, 
-                {$push: {Movies: movieID}},
-                {$upsert: true}
-            )
-            console.log(actorIns)
-            return actorIns._id
-        }
-
-        async function getPlatform(platform, movieID) {
-            let platformIns = await Platform.findOneAndUpdate(
-                {Name: platform.trim()},
-                {$push: {Movies: movieID}},
-                {$upsert: true}
-            )
-            console.log(platformIns)
-            return platformIns._id
-        }
-
         try {   
 
            // 2
@@ -74,27 +54,21 @@ module.exports = {
                let directorID = !directorIns ? mongoose.Types.ObjectId() : directorIns._id
     
                let actorsArr = actors.split(',').map( actor => {
-                let actorID = getActor(actor, movieID)
-                // let actorIns = await Actor.findOneAndUpdate(
-                //     {Name: actor.trim()}, 
-                //     {$push: {Movies: movieID}},
-                //     {$upsert: true}
-                // )
-                // return actorIns._id
-                return actorID
+                let actorIns = await Actor.findOneAndUpdate(
+                    {Name: actor.trim()}, 
+                    {$push: {Movies: movieID}},
+                    {$upsert: true}
+                )
+                return actorIns._id
                })
-
-            //    console.log(actorsArr)
     
                let platformArr = platforms.split(',').map( platform => {
-                //    let platformIns = await Platform.findOneAndUpdate(
-                //        {Name: platform.trim()},
-                //        {$push: {Movies: movieID}},
-                //        {$upsert: true}
-                //    )
-                //    return platformIns._id
-                let platformID = getPlatform(platform, movieID)
-                return platformID
+                   let platformIns = await Platform.findOneAndUpdate(
+                       {Name: platform.trim()},
+                       {$push: {Movies: movieID}},
+                       {$upsert: true}
+                   )
+                   return platformIns._id
                })
     
                let genreArr = genres.split(',').map( genre => {
@@ -102,18 +76,18 @@ module.exports = {
                })
                 
                // 4
-            //    let movieNew = Movie.create({
-            //         _id: movieID,
-            //         Name: name.trim(),
-            //         Director: directorID,
-            //         Actors: actorsArr,
-            //         Platform: platformArr,
-            //         TomatoPublic: tom_pub,
-            //         TomatoCritic: tom_crit,
-            //         Genres: genreArr
-            //    })
+               let movieNew = Movie.create({
+                    _id: movieID,
+                    Name: name.trim(),
+                    Director: directorID,
+                    Actors: actorsArr,
+                    Platform: platformArr,
+                    TomatoPublic: tom_pub,
+                    TomatoCritic: tom_crit,
+                    Genres: genreArr
+               })
 
-            //    res.send(movieNew)
+               res.send(movieNew)
 
             } else {
                 res.send(movie)
