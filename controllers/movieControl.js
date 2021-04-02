@@ -74,7 +74,7 @@ module.exports = {
                let directorID = !directorIns ? mongoose.Types.ObjectId() : directorIns._id
     
                let actorsArr = actors.split(',').map( actor => {
-                let actorID = getActor(actor, movieID)
+                let actorID = await getActor(actor, movieID)
                 // let actorIns = await Actor.findOneAndUpdate(
                 //     {Name: actor.trim()}, 
                 //     {$push: {Movies: movieID}},
@@ -83,6 +83,8 @@ module.exports = {
                 // return actorIns._id
                 return actorID
                })
+
+            //    console.log(actorsArr)
     
                let platformArr = platforms.split(',').map( platform => {
                 //    let platformIns = await Platform.findOneAndUpdate(
@@ -91,7 +93,7 @@ module.exports = {
                 //        {$upsert: true}
                 //    )
                 //    return platformIns._id
-                let platformID = getPlatform(platform, movieID)
+                let platformID = await getPlatform(platform, movieID)
                 return platformID
                })
     
