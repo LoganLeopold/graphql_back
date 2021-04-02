@@ -44,7 +44,7 @@ module.exports = {
 
            if (!movie) {
 
-               let movieID = !movie ? mongoose.Types.ObjectId() : movie._id
+               let movieID = mongoose.Types.ObjectId()
     
                // 3
                let directorIns = await Director.findOne(({
@@ -77,6 +77,7 @@ module.exports = {
                 
                // 4
                let movieNew = Movie.create({
+                    _id: movieID,
                     Name: name.trim(),
                     Director: directorID,
                     Actors: actorsArr,
