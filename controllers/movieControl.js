@@ -89,7 +89,7 @@ module.exports = {
                res.send(movieNew)
 
             } else {
-                res.send("This movie already exists in the database")
+                res.send(movie)
             }
 
         } catch (err) {
