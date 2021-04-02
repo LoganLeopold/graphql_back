@@ -37,7 +37,7 @@ module.exports = {
             genres
         } = req.body;
 
-        async function getActor(actor) {
+        async function getActor(actor, movieID) {
             let actorIns = await Actor.findOneAndUpdate(
                 {Name: actor.trim()}, 
                 {$push: {Movies: movieID}},
@@ -46,7 +46,7 @@ module.exports = {
             return actorIns._id
         }
 
-        async function getPlatform(platform) {
+        async function getPlatform(platform, movieID) {
             let platformIns = await Platform.findOneAndUpdate(
                 {Name: platform.trim()},
                 {$push: {Movies: movieID}},
@@ -72,7 +72,7 @@ module.exports = {
                let directorID = !directorIns ? mongoose.Types.ObjectId() : directorIns._id
     
                let actorsArr = actors.split(',').map( actor => {
-                let actorID = getActor(actor)
+                let actorID = getActor(actor, movieID)
                 // let actorIns = await Actor.findOneAndUpdate(
                 //     {Name: actor.trim()}, 
                 //     {$push: {Movies: movieID}},
@@ -89,7 +89,7 @@ module.exports = {
                 //        {$upsert: true}
                 //    )
                 //    return platformIns._id
-                let platformID = getPlatform(platform)
+                let platformID = getPlatform(platform, movieID)
                 return platformID
                })
     
