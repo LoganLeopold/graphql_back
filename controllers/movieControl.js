@@ -37,6 +37,24 @@ module.exports = {
             genres
         } = req.body;
 
+        async function getActor(actor) {
+            let actorIns = await Actor.findOneAndUpdate(
+                {Name: actor.trim()}, 
+                {$push: {Movies: movieID}},
+                {$upsert: true}
+            )
+            return actorIns._id
+        }
+
+        async function getPlatform(platform) {
+            let platformIns = await Platform.findOneAndUpdate(
+                {Name: platform.trim()},
+                {$push: {Movies: movieID}},
+                {$upsert: true}
+            )
+            return platformIns._id
+        }
+
         try {   
 
            // 2
@@ -54,21 +72,25 @@ module.exports = {
                let directorID = !directorIns ? mongoose.Types.ObjectId() : directorIns._id
     
                let actorsArr = actors.split(',').map( actor => {
-                let actorIns = await Actor.findOneAndUpdate(
-                    {Name: actor.trim()}, 
-                    {$push: {Movies: movieID}},
-                    {$upsert: true}
-                )
-                return actorIns._id
+                let actorID = getActor(actor)
+                // let actorIns = await Actor.findOneAndUpdate(
+                //     {Name: actor.trim()}, 
+                //     {$push: {Movies: movieID}},
+                //     {$upsert: true}
+                // )
+                // return actorIns._id
+                return actorID
                })
     
                let platformArr = platforms.split(',').map( platform => {
-                   let platformIns = await Platform.findOneAndUpdate(
-                       {Name: platform.trim()},
-                       {$push: {Movies: movieID}},
-                       {$upsert: true}
-                   )
-                   return platformIns._id
+                //    let platformIns = await Platform.findOneAndUpdate(
+                //        {Name: platform.trim()},
+                //        {$push: {Movies: movieID}},
+                //        {$upsert: true}
+                //    )
+                //    return platformIns._id
+                let platformID = getPlatform(platform)
+                return platformID
                })
     
                let genreArr = genres.split(',').map( genre => {
