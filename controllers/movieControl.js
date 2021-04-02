@@ -37,7 +37,7 @@ module.exports = {
             genres
         } = req.body;
 
-        function getActor(actor, movieID) {
+        async function getActor(actor, movieID) {
             let actorIns = await Actor.findOneAndUpdate(
                 {Name: actor.trim()}, 
                 {$push: {Movies: movieID}},
@@ -47,7 +47,7 @@ module.exports = {
             return actorIns._id
         }
 
-        function getPlatform(platform, movieID) {
+        async function getPlatform(platform, movieID) {
             let platformIns = await Platform.findOneAndUpdate(
                 {Name: platform.trim()},
                 {$push: {Movies: movieID}},
