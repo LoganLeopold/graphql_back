@@ -47,9 +47,9 @@ module.exports = {
                let movieID = mongoose.Types.ObjectId()
     
                // 3
-               let directorIns = await Director.findOne(({
+               let directorIns = await Director.findOne({
                    Name: director.trim()
-               }))
+               })
     
                let directorID = !directorIns ? mongoose.Types.ObjectId() : directorIns._id
     
