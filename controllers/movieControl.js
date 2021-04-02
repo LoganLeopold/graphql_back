@@ -39,39 +39,51 @@ module.exports = {
             */ 
            
            // 1
+           let movie = await Movie.findOne({Name: name.trim()})
 
-           let movie = await Movie.findOne({Name: name})
+           if (!movie) {
 
-           let movieID = !movie ? mongoose.Types.ObjectId() : movie._id
-
-           // 2
-
-           let directorIns = await Director.findOne(({
-               Name: director.trim()
-           }))
-
-           let directorID = !directorIns ? mongoose.Types.ObjectId() : directorIns._id
-
-           let actorsArr = actors.split(',').map( actor => {
-            let actorIns = await Actor.findOneAndUpdate(
-                {Name: actor.trim()}, 
-                {$push: {Movies: movieID}},
-                {$upsert: true}
-            )
-            return actorIns._id
-           })
-
-           let platformArr = platforms.split(',').map( platform => {
-               let platformIns = await Platform.findOneAndUpdate(
-                   {Name: platform.trim()},
-                   {$push: {Movies: movieID}},
-                   {$upsert: true}
-               )
-               return platformIns._id
-           })
-
-
-            
+               let movieID = !movie ? mongoose.Types.ObjectId() : movie._id
+    
+               // 2
+               let directorIns = await Director.findOne(({
+                   Name: director.trim()
+               }))
+    
+               let directorID = !directorIns ? mongoose.Types.ObjectId() : directorIns._id
+    
+               let actorsArr = actors.split(',').map( actor => {
+                let actorIns = await Actor.findOneAndUpdate(
+                    {Name: actor.trim()}, 
+                    {$push: {Movies: movieID}},
+                    {$upsert: true}
+                )
+                return actorIns._id
+               })
+    
+               let platformArr = platforms.split(',').map( platform => {
+                   let platformIns = await Platform.findOneAndUpdate(
+                       {Name: platform.trim()},
+                       {$push: {Movies: movieID}},
+                       {$upsert: true}
+                   )
+                   return platformIns._id
+               })
+    
+               let genreArr = genres.split(',').map( genre => {
+                   return genre.trim()
+               })
+                
+               let movieNew = Movie.create({
+                    Name: name.trim(),
+                    Director: directorID,
+                    Actors: actorsArr,
+                    Platform: platformArr,
+                    TomatoPublic: tom_pub,
+                    TomatoCritic: tom_crit,
+                    Genres: genreArr
+               })
+           }
 
 
             // Below here is original try 
