@@ -53,30 +53,30 @@ module.exports = {
     
                let directorID = !directorIns ? mongoose.Types.ObjectId() : directorIns._id
     
-               let actorsArr = actors.split(',').map( actor => {
+               let actorsArr = await Promise.all(actors.split(',').map( async (actor) => {
                 let actorIns = await Actor.findOneAndUpdate(
                     {Name: actor.trim()}, 
                     {$push: {Movies: movieID}},
                     {$upsert: true}
                 )
                 return actorIns._id
-               })
+               }))
     
-               let platformArr = platforms.split(',').map( platform => {
+               let platformArr = await Promise.all(platforms.split(',').map( async (platform) => {
                    let platformIns = await Platform.findOneAndUpdate(
                        {Name: platform.trim()},
                        {$push: {Movies: movieID}},
                        {$upsert: true}
                    )
                    return platformIns._id
-               })
+               }))
     
                let genreArr = genres.split(',').map( genre => {
                    return genre.trim()
                })
                 
                // 4
-               let movieNew = Movie.create({
+               let movieNew = await Movie.create({
                     _id: movieID,
                     Name: name.trim(),
                     Director: directorID,
