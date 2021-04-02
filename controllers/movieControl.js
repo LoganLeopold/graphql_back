@@ -43,6 +43,7 @@ module.exports = {
                 {$push: {Movies: movieID}},
                 {$upsert: true}
             )
+            console.log(actorIns)
             return actorIns._id
         }
 
@@ -52,6 +53,7 @@ module.exports = {
                 {$push: {Movies: movieID}},
                 {$upsert: true}
             )
+            console.log(platformIns)
             return platformIns._id
         }
 
@@ -98,18 +100,18 @@ module.exports = {
                })
                 
                // 4
-               let movieNew = Movie.create({
-                    _id: movieID,
-                    Name: name.trim(),
-                    Director: directorID,
-                    Actors: actorsArr,
-                    Platform: platformArr,
-                    TomatoPublic: tom_pub,
-                    TomatoCritic: tom_crit,
-                    Genres: genreArr
-               })
+            //    let movieNew = Movie.create({
+            //         _id: movieID,
+            //         Name: name.trim(),
+            //         Director: directorID,
+            //         Actors: actorsArr,
+            //         Platform: platformArr,
+            //         TomatoPublic: tom_pub,
+            //         TomatoCritic: tom_crit,
+            //         Genres: genreArr
+            //    })
 
-               res.send(movieNew)
+            //    res.send(movieNew)
 
             } else {
                 res.send(movie)
