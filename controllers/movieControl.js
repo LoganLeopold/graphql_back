@@ -37,6 +37,7 @@ module.exports = {
             genres
         } = req.body;
 
+        console.log(platforms)
         try {   
 
            // 2
@@ -68,7 +69,7 @@ module.exports = {
                        {$push: {Movies: movieID}},
                        {$upsert: true}
                    )
-                   return platformIns._id
+                   return platformIns
                }))
     
                let genreArr = genres.split(',').map( genre => {
@@ -76,16 +77,16 @@ module.exports = {
                })
                 
                // 4
-               let movieNew = await Movie.create({
-                    _id: movieID,
-                    Name: name.trim(),
-                    Director: directorID,
-                    Actors: actorsArr,
-                    Platform: platformArr,
-                    TomatoPublic: tom_pub,
-                    TomatoCritic: tom_crit,
-                    Genres: genreArr
-               })
+            //    let movieNew = await Movie.create({
+            //         _id: movieID,
+            //         Name: name.trim(),
+            //         Director: directorID,
+            //         Actors: actorsArr,
+            //         Platform: platformArr,
+            //         TomatoPublic: tom_pub,
+            //         TomatoCritic: tom_crit,
+            //         Genres: genreArr
+            //    })
 
                res.send(movieNew)
 
