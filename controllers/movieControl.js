@@ -39,20 +39,29 @@ module.exports = {
 
         try {   
 
+            // for testing purposes - DELETE 
+            let movieID = mongoose.Types.ObjectId()
            // 2
            let movie = await Movie.findOne({Name: name.trim()})
 
-           let actorsNew = await Promise.all(actors.split(',').map( async (actor) => {
-            let actorIns = await Actor.findOneAndUpdate(
-                {Name: actor.trim()}, 
-                {$push: {Movies: movieID}},
-                {$upsert: true}
-            )
-            return actorIns._id
-           }))
+        let actorsArr = actors.split(',')
 
-           console.log(actorsNew)
-           return actorsNew
+        let actor1 = actorsArr[0].trim()
+
+        let newactor = await Actor.findOneAndUpdate({Name: actor1}, {$push: {Movies: movieID}}, {$upsert: true, $returnNewDocument: true})
+
+        console.log(newactor)
+
+        //    let actorsNew = await Promise.all(actors.split(',').map( async (actor) => {
+        //        actor = toString(actor.trim())
+        //     let actorIns = await Actor.findOneAndUpdate(
+        //         {Name: actor}, 
+        //         {$push: {Movies: movieID}},
+        //         {$upsert: true}
+        //     )
+        //    }))
+
+        //    console.log(actorsNew)
 
         //    if (!movie) {
             if (2 === 1) {
@@ -88,17 +97,16 @@ module.exports = {
                    return genre.trim()
                })
                 
-               // 4
-            //    let movieNew = await Movie.create({
-            //         _id: movieID,
-            //         Name: name.trim(),
-            //         Director: directorID,
-            //         Actors: actorsArr,
-            //         Platform: platformArr,
-            //         TomatoPublic: tom_pub,
-            //         TomatoCritic: tom_crit,
-            //         Genres: genreArr
-            //    })
+               let movieNew = await Movie.create({
+                    _id: movieID,
+                    Name: name.trim(),
+                    Director: directorID,
+                    Actors: actorsArr,
+                    Platform: platformArr,
+                    TomatoPublic: tom_pub,
+                    TomatoCritic: tom_crit,
+                    Genres: genreArr
+               })
 
                res.send(movieNew)
 
