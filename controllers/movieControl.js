@@ -70,6 +70,8 @@ module.exports = {
                    )
                    return platformIns._id
                }))
+
+               console.log(platformArr)
     
                let genreArr = genres.split(',').map( genre => {
                    return genre.trim()
@@ -80,7 +82,7 @@ module.exports = {
                     Name: name.trim(),
                     Director: directorID,
                     Actors: actorsArr,
-                    Platform: platformArr,
+                    Platforms: platformArr,
                     TomatoPublic: tom_pub,
                     TomatoCritic: tom_crit,
                     Genres: genreArr
