@@ -37,13 +37,25 @@ module.exports = {
             genres
         } = req.body;
 
-        console.log(platforms)
         try {   
 
            // 2
            let movie = await Movie.findOne({Name: name.trim()})
 
-           if (!movie) {
+           let actorsNew = await Promise.all(actors.split(',').map( async (actor) => {
+            let actorIns = await Actor.findOneAndUpdate(
+                {Name: actor.trim()}, 
+                {$push: {Movies: movieID}},
+                {$upsert: true}
+            )
+            return actorIns._id
+           }))
+
+           console.log(actorsNew)
+           return actorsNew
+
+        //    if (!movie) {
+            if (2 === 1) {
 
                let movieID = mongoose.Types.ObjectId()
     
