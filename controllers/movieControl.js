@@ -39,24 +39,10 @@ module.exports = {
 
         try {   
 
-            let movieID = mongoose.Types.ObjectId()
            // 2
            let movie = await Movie.findOne({Name: name.trim()})
 
-           let actorsNew = await Promise.all(actors.split(',').map( async (actor) => {
-            //    actor = actor.trim()
-            let actorIns = await Actor.findOneAndUpdate(
-                {Name: actor.trim()}, 
-                {$push: {Movies: movieID}},
-                {upsert: true, new: true}
-            )
-            console.log(actorIns._id)
-            return actorIns._id
-           }))
-
-
-        //    if (!movie) {
-            if (2 === 1) {
+           if (!movie) {
 
                let movieID = mongoose.Types.ObjectId()
     
@@ -66,23 +52,23 @@ module.exports = {
                })
     
                let directorID = !directorIns ? mongoose.Types.ObjectId() : directorIns._id
-    
-               let actorsArr = await Promise.all(actors.split(',').map( async (actor) => {
-                let actorIns = await Actor.findOneAndUpdate(
-                    {Name: actor.trim()}, 
-                    {$push: {Movies: movieID}},
-                    {$upsert: true}
-                )
-                return actorIns._id
-               }))
+
+                let actorsArr = await Promise.all(actors.split(',').map( async (actor) => {
+                    let actorIns = await Actor.findOneAndUpdate(
+                        {Name: actor.trim()}, 
+                        {$push: {Movies: movieID}},
+                        {upsert: true, new: true}
+                    )
+                    return actorIns._id
+                }))
     
                let platformArr = await Promise.all(platforms.split(',').map( async (platform) => {
                    let platformIns = await Platform.findOneAndUpdate(
                        {Name: platform.trim()},
                        {$push: {Movies: movieID}},
-                       {$upsert: true}
+                       {upsert: true, new: true} 
                    )
-                   return platformIns
+                   return platformIns._id
                }))
     
                let genreArr = genres.split(',').map( genre => {
