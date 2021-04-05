@@ -39,29 +39,21 @@ module.exports = {
 
         try {   
 
-            // for testing purposes - DELETE 
             let movieID = mongoose.Types.ObjectId()
            // 2
            let movie = await Movie.findOne({Name: name.trim()})
 
-        let actorsArr = actors.split(',')
+           let actorsNew = await Promise.all(actors.split(',').map( async (actor) => {
+            //    actor = actor.trim()
+            let actorIns = await Actor.findOneAndUpdate(
+                {Name: actor.trim()}, 
+                {$push: {Movies: movieID}},
+                {upsert: true, new: true}
+            )
+            console.log(actorIns._id)
+            return actorIns._id
+           }))
 
-        let actor1 = actorsArr[0].trim()
-
-        let newactor = await Actor.findOneAndUpdate({Name: actor1}, {$push: {Movies: movieID}}, {upsert: true, new: true})
-
-        console.log(newactor)
-
-        //    let actorsNew = await Promise.all(actors.split(',').map( async (actor) => {
-        //        actor = toString(actor.trim())
-        //     let actorIns = await Actor.findOneAndUpdate(
-        //         {Name: actor}, 
-        //         {$push: {Movies: movieID}},
-        //         {$upsert: true}
-        //     )
-        //    }))
-
-        //    console.log(actorsNew)
 
         //    if (!movie) {
             if (2 === 1) {
