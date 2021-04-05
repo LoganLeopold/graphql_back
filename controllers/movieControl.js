@@ -48,7 +48,7 @@ module.exports = {
 
         let actor1 = actorsArr[0].trim()
 
-        let newactor = await Actor.findOneAndUpdate({Name: actor1}, {$push: {Movies: movieID}}, {$upsert: true, $returnNewDocument: true})
+        let newactor = await Actor.findOneAndUpdate({Name: actor1}, {$push: {Movies: movieID}}, {upsert: true, new: true})
 
         console.log(newactor)
 
