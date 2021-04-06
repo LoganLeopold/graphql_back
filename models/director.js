@@ -1,7 +1,8 @@
+const compose = require('graphql-compose-mongoose')
 const mongoose = require('../db')
 const Schema = mongoose.Schema
 
-const Director = new Schema({
+const DirectorSchema = new Schema({
 
     Name: String,
     Movies: [
@@ -13,4 +14,7 @@ const Director = new Schema({
 
 })
 
-module.exports = mongoose.model('Director', Director)
+const Director = mongoose.model('Director', DirectorSchema)
+const DirectorTC = compose.composeWithMongoose(Director)
+
+module.exports = {DirectorSchema, Director, DirectorTC}

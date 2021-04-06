@@ -1,4 +1,4 @@
-const Actor = require("../models/actor")
+const { Actor } = require("../models/actor")
 
 module.exports = {
 

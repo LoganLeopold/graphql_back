@@ -1,7 +1,8 @@
+const compose = require('graphql-compose-mongoose')
 const mongoose = require('../db')
 const Schema = mongoose.Schema
 
-const Movie = new Schema({
+const MovieSchema = new Schema({
 
     Name: String,
     Director: {
@@ -26,4 +27,7 @@ const Movie = new Schema({
 
 })
 
-module.exports = mongoose.model('Movie', Movie)
+const Movie = mongoose.model('Movie', MovieSchema)
+const MovieTC = compose.composeWithMongoose(Movie)
+
+module.exports = {MovieSchema, Movie, MovieTC}
