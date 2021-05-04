@@ -27,10 +27,7 @@ ActorTC.addRelation(
     {
         resolver: movieByIds,
         prepareArgs: {
-            _ids: (source) => {
-                let idArray = source.Movies.map( movie => movie)
-                console.log(idArray)
-            },
+            _ids: (source) => source.Movies.map( movie => movie),
             skip: null,
             sort: null
         },

@@ -4,5 +4,6 @@ const movieControl = require('../controllers/movieControl')
 
 router.get('/', movieControl.list)
 router.post('/create', movieControl.create)
+router.put('/:id', movieControl.update)
 
 module.exports = router
