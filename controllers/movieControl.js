@@ -6,9 +6,15 @@ const { Actor } = require("../models/actor")
 
 module.exports = {
 
-    list: async (req,res) => {
+    list: async (req, res) => {
         let movies = await Movie.find({})
         res.send(movies)
+    },
+
+    findOne: async (req, res) => {
+        console.log(req.params.id)
+        let movie = await Movie.findById(req.params.id)
+        res.send(movie)
     },
 
     create: async (req, res) => {
