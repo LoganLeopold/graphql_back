@@ -104,43 +104,46 @@ module.exports = {
 
     update: async (req, res) => {
 
-        /*
+        const { name, director, actors, platforms, tom_pub, tom_crit, genres } = req.body;
 
-        Movie to DB Pseudocode
-
-        1. Get values from req.body
-        2. Does movie exist? 
-        3. Establish IDs for use 
-            -explicit for movieID + directorID
-            -dynamic for actors + platforms
-        4. Make and return movie
-        
-        */ 
-
-        // 1
-        const { 
-            name, 
-            director,
-            actors, 
-            platforms, 
-            tom_pub, 
-            tom_crit, 
-            genres
-        } = req.body;
-
-        const { id } = req.params
-
+        // if (1 === 0) {
         try {   
-    
-            let directorArr = await Promise.all(director.split(',').map(async (director) => {
-                let dir = await Director.findOneAndUpdate(
-                    {Name: director.trim()},
-                    {$addToSet: {'Movies': id}},
-                    {upsert: true, new: true}
-                )
-                return dir._id
-            }))
 
+            /*
+            
+            I need to clear the docs that don't get represented AND clear the movie doc to throw on the updates. 
+
+            Clear the docs with findManyAndUpdate
+
+            */
+
+            let movieClear = await Movie.findByIdAndUpdate(
+                id, 
+                {
+                    Name: '',
+                    Director: null,
+                    Actors: [],
+                    Platforms: [],
+                    TomatoPublic: null,
+                    TomatoCritic: null,
+                    Genres: []
+                },
+                {
+                    new: true
+                }
+            )
+    
+            // let directorArr = await Promise.all(director.split(',').map(async (director) => {
+            //     let dir = await Director.findOneAndUpdate(
+            //         {Name: director.trim()},
+            //         {$addToSet: {'Movies': id}},
+            //         {upsert: true, new: true}
+            //     )
+            //     return dir._id
+            // }))
+            let dir = await Director.findOneAndUpdate()
+
+            // THESE COULD MAYBE USE FINDONEANDUPDATE? 
             let actorsArr = await Promise.all(actors.split(',').map( async (actor) => {
                 let actorIns = await Actor.findOneAndUpdate(
                     {Name: actor.trim()}, 
@@ -163,23 +166,27 @@ module.exports = {
                 return genre.trim()
             })
                 
-            let movieNew = await Movie.findByIdAndUpdate(
-                id, 
-                {
-                    Name: name.trim(),
-                    Director: directorArr,
-                    Actors: actorsArr,
-                    Platforms: platformArr,
-                    TomatoPublic: tom_pub,
-                    TomatoCritic: tom_crit,
-                    Genres: genreArr
-                },
-                {
-                    new: true
-                }
-            )
+            movieClear.then( async () => {
 
-            res.send(movieNew)
+                let movieNew = await Movie.findByIdAndUpdate(
+                    id, 
+                    {
+                        Name: name.trim(),
+                        Director: directorArr,
+                        Actors: actorsArr,
+                        Platforms: platformArr,
+                        TomatoPublic: tom_pub,
+                        TomatoCritic: tom_crit,
+                        Genres: genreArr
+                    },
+                    {
+                        new: true
+                    }
+                )
+                
+                res.send(movieNew)
+
+            })
 
         } catch (err) {
             console.log(err)
