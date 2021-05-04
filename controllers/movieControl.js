@@ -1,8 +1,8 @@
 var mongoose = require('mongoose');
-const Movie = require("../models/movie")
-const Director = require("../models/director")
-const Platform = require("../models/platform")
-const Actor = require("../models/actor")
+const { Movie } = require("../models/movie")
+const { Director } = require("../models/director")
+const { Platform } = require("../models/platform")
+const { Actor } = require("../models/actor")
 
 module.exports = {
 

@@ -34,6 +34,7 @@ ActorTC.addRelation(
             skip: null,
             sort: null
         },
+        projection: { Movies: true }
     }
 )
 
