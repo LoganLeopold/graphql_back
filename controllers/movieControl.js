@@ -106,17 +106,34 @@ module.exports = {
 
         const { name, director, actors, platforms, tom_pub, tom_crit, genres } = req.body;
 
-        // if (1 === 0) {
+        const { id } = req.params 
+
         try {   
-
-            /*
             
-            I need to clear the docs that don't get represented AND clear the movie doc to throw on the updates. 
+            // I need to clear the docs that don't get represented AND clear the movie doc to throw on the updates. 
 
-            Clear the docs with findManyAndUpdate
+            // I can probably abstract this to a function that works with the req data and model
 
-            */
+            //     -Get all documents that have the movie in their array using model
+            
+                let currActors = await Actor.find({Movies: id})
+                let reqActors = Actors.split(',').map( actor => actor.trim())
+                let deleteActors = []
 
+            //     -Use request data to filter them:
+                currActors.forEach( (actor, i) => {
+                    if (!reqActors.includes(actor.Name)) {
+                        currActors.splice(i, 0)
+                    } 
+                })
+
+                let deletions = await Promise.all( Actor.updateMany({})
+                //         -If they were not present, delete the movie id
+                //         -If they were, insert or upsert and return ID to array movieNew update can use
+
+            // Clear the docs with findManyAndUpdate
+
+            if (1===0) {
             let movieClear = await Movie.findByIdAndUpdate(
                 id, 
                 {
@@ -187,6 +204,8 @@ module.exports = {
                 res.send(movieNew)
 
             })
+
+        }
 
         } catch (err) {
             console.log(err)
