@@ -12,7 +12,6 @@ module.exports = {
     },
 
     findOne: async (req, res) => {
-        console.log(req.params.id)
         let movie = await Movie.findById(req.params.id)
         res.send(movie)
     },
@@ -76,8 +75,6 @@ module.exports = {
                    )
                    return platformIns._id
                }))
-
-               console.log(platformArr)
     
                let genreArr = genres.split(',').map( genre => {
                    return genre.trim()
@@ -130,8 +127,6 @@ module.exports = {
             tom_crit, 
             genres
         } = req.body;
-
-        console.log(req)
 
         // try {   
 

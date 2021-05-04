@@ -17,6 +17,16 @@ module.exports = {
         } catch (err) {
             console.log(err)
         }
+    },
+
+    findMany: async (req, res) => {
+        
+        let { id } = req.params
+
+        let actors = await Actor.find({ Movies: id })
+
+        res.send(actors)
+
     }
 
 }

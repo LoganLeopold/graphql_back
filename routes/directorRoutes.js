@@ -3,6 +3,6 @@ const router = express.Router()
 const directorControl = require('../controllers/directorControl')
 
 router.get('/', directorControl.list)
-// router.post('/create', actorControl.create)
+router.get('/many/:id', directorControl.findMany)
 
 module.exports = router
