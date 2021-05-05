@@ -3,6 +3,7 @@ const { Movie } = require("../models/movie")
 const { Director } = require("../models/director")
 const { Platform } = require("../models/platform")
 const { Actor } = require("../models/actor")
+const auditDocs = require('../utilities/auditDocs')
 
 module.exports = {
 
@@ -118,7 +119,7 @@ module.exports = {
                 let currActors = await Actor.find({Movies: id})
                 
                 //     -Use request data to filter them:
-                let reqActors = Actors.split(',').map( actor => actor.trim())
+                let reqActors = actors.split(',').map( actor => actor.trim())
                 currActors.forEach( (actor, i) => {
                     if (!reqActors.includes(actor.Name)) {
                         currActors.splice(i, 0)
@@ -220,6 +221,20 @@ module.exports = {
         } catch (err) {
             console.log(err)
         }
+
+    },
+
+    testAbst: async (req, res) => {
+
+        async function testAbstract( id, Model = '') {
+
+            let movie = await mongoose.model(Model).findById(id)
+
+            res.send(movie)
+
+        }
+
+        testAbstract(req.params.id, Movie)
 
     }
 

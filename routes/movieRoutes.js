@@ -6,5 +6,6 @@ router.get('/', movieControl.list)
 router.post('/create', movieControl.create)
 router.get('/:id', movieControl.findOne)
 router.put('/update/:id', movieControl.update)
+router.put('/testAbs/:id', movieControl.testAbst)
 
 module.exports = router
