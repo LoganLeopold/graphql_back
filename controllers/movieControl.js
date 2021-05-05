@@ -36,11 +36,11 @@ module.exports = {
         const { 
             name, 
             director,
-            actors, 
-            platforms, 
+            actor, 
+            platform, 
             tom_pub, 
             tom_crit, 
-            genres
+            genre
         } = req.body;
 
         try {   
@@ -105,7 +105,7 @@ module.exports = {
 
     update: async (req, res) => {
 
-        const { name, director, actors, platforms, tom_pub, tom_crit, genres } = req.body;
+        const { name, director, actor, platform, tom_pub, tom_crit, genre } = req.body;
 
         const { id } = req.params 
 
@@ -226,15 +226,22 @@ module.exports = {
 
     testAbst: async (req, res) => {
 
-        async function testAbstract( id, Model = '') {
+        let reqProps = Object.keys(req.body)
 
-            let movie = await mongoose.model(Model).findById(id)
+        console.log(reqProps)
 
-            res.send(movie)
+        reqProps.forEach( (prop, i) => {
 
-        }
+            console.log(prop)
 
-        testAbstract(req.params.id, Movie)
+            let propCap = prop.charAt(0).toUpperCase() + prop.slice(1)
+
+            console.log(propCap)
+
+            if (!mongoose.modelNames().includes(propCap)) {
+                reqProps.splice(i, 1)
+            }
+        })
 
     }
 
