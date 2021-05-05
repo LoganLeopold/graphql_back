@@ -44,6 +44,17 @@ module.exports = {
                     //Get all documents that have the movie in their array using model
                     let currDocs = await Mongoose.model(arr[1]).find({[auditFor]: id})
                     
+
+                    /*
+                    ----------------------------------------------------------------------------
+                    ----------------------------------------------------------------------------
+                    The next project will be bulk-writing through this whole section with one 
+                    load. I should just load in a query for bulk write based on whether or not
+                    it's in the reqData. 
+                    ----------------------------------------------------------------------------
+                    ----------------------------------------------------------------------------
+                    */
+
                     //Use request data to filter them:
                     let reqData = req.body[arr[0]].split(',').map( model => model.trim())
                     currDocs.forEach( (mod, i) => {
