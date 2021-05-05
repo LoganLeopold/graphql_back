@@ -1,6 +1,36 @@
 const Mongoose = require('mongoose')
 
-async function auditDocs( id, body, auditIn = '', auditFor = '') {
+/*
+Insert:
+- id (Id of document you're clearing from other doc arrays)
+- req (Request of update to get base url + loop through models that are getting cleaned)
+*/
+
+async function auditDocs( id, req, auditFor = '') {
+
+    let baseUrl = req.baseUrl.split('').filter( ( a, b, i ) => {
+        if (i > 0) {
+            return 1
+        } else {
+            return -1
+        }
+    }).join('')
+
+    console.log(baseUrl)
+
+    let reqProps = Object.keys(body)
+
+    let remainders = reqProps.reduce( ( acc, prop ) => {
+
+        let propCap = prop.charAt(0).toUpperCase() + prop.slice(1)
+
+        if (mongoose.modelNames().includes(propCap)) {
+            acc.push(propCap)
+        }
+
+        return acc
+
+    }, [])
 
     // I need to clear the docs that don't get represented AND clear the movie doc to throw on the updates. 
 

@@ -110,39 +110,6 @@ module.exports = {
         const { id } = req.params 
 
         try {   
-            
-            // I need to clear the docs that don't get represented AND clear the movie doc to throw on the updates. 
-
-            // I can probably abstract this to a function that works with the req data and model
-
-                //     -Get all documents that have the movie in their array using model
-                let currActors = await Actor.find({Movies: id})
-                
-                //     -Use request data to filter them:
-                let reqActors = actors.split(',').map( actor => actor.trim())
-                currActors.forEach( (actor, i) => {
-                    if (!reqActors.includes(actor.Name)) {
-                        currActors.splice(i, 0)
-                    } 
-                })
-
-                //      -If they were not present, delete the movie id
-                let deletions = await Actor.updateMany(
-                    { _id: { $in: currActors } },
-                    { $pull: { Movies: id } },
-                )
-                console.log(deletions) 
-
-                //       -If they were, insert or upsert and return ID to array movieNew update can use
-                let newActors = await Actor.updateMany(
-                    { _id: { $in: reqActors } },
-                    {$addToSet: { Movies: id } },
-                    {$upsert: true}
-                )
-                console.log(newActors)
-
-
-            // Clear the docs with findManyAndUpdate
 
             if (1===0) {
             let movieClear = await Movie.findByIdAndUpdate(
@@ -172,7 +139,7 @@ module.exports = {
             let dir = await Director.findOneAndUpdate()
 
             // THESE COULD MAYBE USE FINDONEANDUPDATE? 
-            let actorsArr = await Promise.all(actors.split(',').map( async (actor) => {
+            let actorsArr = await Promise.all(actor.split(',').map( async (actor) => {
                 let actorIns = await Actor.findOneAndUpdate(
                     {Name: actor.trim()}, 
                     {$addToSet: {'Movies': id}},
@@ -181,7 +148,7 @@ module.exports = {
                 return actorIns._id
             }))
     
-            let platformArr = await Promise.all(platforms.split(',').map( async (platform) => {
+            let platformArr = await Promise.all(platform.split(',').map( async (platform) => {
                 let platformIns = await Platform.findOneAndUpdate(
                     {Name: platform.trim()},
                     {$addToSet: {'Movies': id}},
@@ -226,22 +193,7 @@ module.exports = {
 
     testAbst: async (req, res) => {
 
-        let reqProps = Object.keys(req.body)
-
-        console.log(reqProps)
-
-        reqProps.forEach( (prop, i) => {
-
-            console.log(prop)
-
-            let propCap = prop.charAt(0).toUpperCase() + prop.slice(1)
-
-            console.log(propCap)
-
-            if (!mongoose.modelNames().includes(propCap)) {
-                reqProps.splice(i, 1)
-            }
-        })
+        res.send("SUP BRAH")
 
     }
 
