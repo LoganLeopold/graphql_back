@@ -53,11 +53,18 @@ module.exports = {
                let movieID = mongoose.Types.ObjectId()
     
                // 3
-               let directorIns = await Director.findOne({
-                   Name: director.trim()
-               })
+               let directorCheck = await Director.findOneAndUpdate(
+                    {Name: director.trim()}, 
+                    {
+                        $push: {Movies: movieID},
+                        $setOnInsert: {
+                            Name: director.trim(),
+                        }
+                    },
+                    {upsert: true, new: true}
+               )
     
-               let directorID = !directorIns ? mongoose.Types.ObjectId() : directorIns._id
+               let directorID = directorCheck._id
 
                 let actorsArr = await Promise.all(actor.split(',').map( async (act) => {
                     let actorIns = await Actor.findOneAndUpdate(
