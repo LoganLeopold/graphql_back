@@ -3,7 +3,7 @@ const { Movie } = require("../models/movie")
 const { Director } = require("../models/director")
 const { Platform } = require("../models/platform")
 const { Actor } = require("../models/actor")
-const auditDocs = require('../utilities/auditDocs')
+const { auditDocs, capitalize, depluralize }  = require('../utilities')
 
 module.exports = {
 
@@ -220,11 +220,7 @@ module.exports = {
 
     testAbst: async (req, res) => {
 
-        // res.send("SUP BRAH")
-
-        let arr = ['actor', 'Actor']
-
-        console.log(req)
+        res.send("SUP BRAH")
 
     }
 
