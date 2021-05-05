@@ -4,20 +4,27 @@ const Mongoose = require('mongoose')
 Insert:
 - id (Id of document you're clearing from other doc arrays)
 - req (Request of update to get base url + loop through models that are getting cleaned)
+
+Async resolves to:
+- Array of tuples: [ (string), (array) ]
+    - string = model name + 's' for easy manipulation into new doc in update
+    - array = array of ids to insert into new doc in update
 */
 
-async function auditDocs( id, req, auditFor = '') {
+async function auditDocs( id, req) {
 
-    let baseUrl = req.baseUrl.split('').filter( ( a, b, i ) => {
+    //Establishing auditFor
+    let baseUrl = req.baseUrl.split('').filter( ( letter, i ) => {
         if (i > 0) {
-            return 1
+            return true
         } else {
-            return -1
+            return false
         }
     }).join('')
+    
+    let auditFor = baseUrl.charAt(0).toUpperCase() + baseUrl.slice(1) 
 
-    console.log(baseUrl)
-
+    //Gathering models to audit
     let reqProps = Object.keys(body)
 
     let remainders = reqProps.reduce( ( acc, prop ) => {
