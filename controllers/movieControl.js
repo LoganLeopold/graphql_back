@@ -193,7 +193,11 @@ module.exports = {
 
     testAbst: async (req, res) => {
 
-        res.send("SUP BRAH")
+        // res.send("SUP BRAH")
+
+        let arr = ['actor', 'Actor']
+
+        console.log(req)
 
     }
 
