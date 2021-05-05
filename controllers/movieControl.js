@@ -59,19 +59,29 @@ module.exports = {
     
                let directorID = !directorIns ? mongoose.Types.ObjectId() : directorIns._id
 
-                let actorsArr = await Promise.all(actors.split(',').map( async (actor) => {
+                let actorsArr = await Promise.all(actor.split(',').map( async (act) => {
                     let actorIns = await Actor.findOneAndUpdate(
-                        {Name: actor.trim()}, 
-                        {$push: {Movies: movieID}},
+                        {Name: act.trim()}, 
+                        {
+                            $push: {Movies: movieID},
+                            $setOnInsert: {
+                                Name: act.trim(),
+                            }
+                        },
                         {upsert: true, new: true}
                     )
                     return actorIns._id
                 }))
     
-               let platformArr = await Promise.all(platforms.split(',').map( async (platform) => {
+               let platformArr = await Promise.all(platform.split(',').map( async (plat) => {
                    let platformIns = await Platform.findOneAndUpdate(
-                       {Name: platform.trim()},
-                       {$push: {Movies: movieID}},
+                       {Name: platf.trim()},
+                       {
+                        $push: {Movies: movieID},
+                        $setOnInsert: {
+                            Name: plat.trim(),
+                        }
+                    },
                        {upsert: true, new: true} 
                    )
                    return platformIns._id
@@ -139,19 +149,29 @@ module.exports = {
             let dir = await Director.findOneAndUpdate()
 
             // THESE COULD MAYBE USE FINDONEANDUPDATE? 
-            let actorsArr = await Promise.all(actor.split(',').map( async (actor) => {
+            let actorsArr = await Promise.all(actor.split(',').map( async (act) => {
                 let actorIns = await Actor.findOneAndUpdate(
-                    {Name: actor.trim()}, 
-                    {$addToSet: {'Movies': id}},
+                    {Name: act.trim()}, 
+                    {
+                        $addToSet: {'Movies': id},
+                        $setOnInsert: {
+                            Name: act.trim(),
+                        }
+                    },
                     {upsert: true, new: true}
                 )
                 return actorIns._id
             }))
     
-            let platformArr = await Promise.all(platform.split(',').map( async (platform) => {
+            let platformArr = await Promise.all(platform.split(',').map( async (plat) => {
                 let platformIns = await Platform.findOneAndUpdate(
-                    {Name: platform.trim()},
-                    {$addToSet: {'Movies': id}},
+                    {Name: plat.trim()},
+                    {
+                        $addToSet: {'Movies': id},
+                        $setOnInsert: {
+                            Name: plat.trim(),
+                        }
+                    },
                     {upsert: true, new: true} 
                 )
                 return platformIns._id
