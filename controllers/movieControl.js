@@ -114,22 +114,32 @@ module.exports = {
 
             // I can probably abstract this to a function that works with the req data and model
 
-            //     -Get all documents that have the movie in their array using model
-            
+                //     -Get all documents that have the movie in their array using model
                 let currActors = await Actor.find({Movies: id})
+                
+                //     -Use request data to filter them:
                 let reqActors = Actors.split(',').map( actor => actor.trim())
-                let deleteActors = []
-
-            //     -Use request data to filter them:
                 currActors.forEach( (actor, i) => {
                     if (!reqActors.includes(actor.Name)) {
                         currActors.splice(i, 0)
                     } 
                 })
 
-                let deletions = await Promise.all( Actor.updateMany({})
-                //         -If they were not present, delete the movie id
-                //         -If they were, insert or upsert and return ID to array movieNew update can use
+                //      -If they were not present, delete the movie id
+                let deletions = await Actor.updateMany(
+                    { _id: { $in: currActors } },
+                    { $pull: { Movies: id } },
+                )
+                console.log(deletions) 
+
+                //       -If they were, insert or upsert and return ID to array movieNew update can use
+                let newActors = await Actor.updateMany(
+                    { _id: { $in: reqActors } },
+                    {$addToSet: { Movies: id } },
+                    {$upsert: true}
+                )
+                console.log(newActors)
+
 
             // Clear the docs with findManyAndUpdate
 
