@@ -4,10 +4,10 @@ const db = require("../db")
 
 const schemaComposer = new SchemaComposer();
 
-const { ActorQuery, ActorMutation } = require('./actor_gs');
-const { DirectorQuery, DirectorMutation } = require('./director.gs');
-const { MovieQuery, MovieMutation } = require('./movie_gs');
-const { PlatformQuery, PlatformMutation } = require('./platform_gs');
+const { ActorQuery, ActorMutation } = require('../models/actor');
+const { DirectorQuery, DirectorMutation } = require('../models/director');
+const { MovieQuery, MovieMutation } = require('../models/movie');
+const { PlatformQuery, PlatformMutation } = require('../models/platform');
 
 schemaComposer.Query.addFields({
     ...ActorQuery,

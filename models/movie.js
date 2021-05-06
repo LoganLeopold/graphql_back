@@ -2,15 +2,14 @@ const compose = require('graphql-compose-mongoose')
 const mongoose = require('../db')
 const Schema = mongoose.Schema
 
-const { DirectorQuery } = require('../graph_schemas/director.gs')
-const { PlatformQuery } = require('../graph_schemas/platform_gs')
+const { DirectorQuery } = require('./director')
+const { PlatformQuery } = require('./platform')
 
 const { directorById } = DirectorQuery
 const { platformByIds } = PlatformQuery
 
-const { ActorQuery } = require('../graph_schemas/actor_gs')
+const { ActorQuery } = require('./actor')
 const { actorByIds } = ActorQuery
-console.log(actorByIds)
 
 const MovieSchema = new Schema({
 
@@ -39,6 +38,28 @@ const MovieSchema = new Schema({
 
 const Movie = mongoose.model('Movie', MovieSchema)
 const MovieTC = compose.composeWithMongoose(Movie)
+
+const MovieQuery = {
+    movieById: MovieTC.getResolver('findById'),
+    movieByIds: MovieTC.getResolver('findByIds'),
+    movieOne: MovieTC.getResolver('findOne'),
+    movieMany: MovieTC.getResolver('findMany'),
+    movieCount: MovieTC.getResolver('count'),
+    movieConnection: MovieTC.getResolver('connection'),
+    moviePagination: MovieTC.getResolver('pagination'),
+};
+
+const MovieMutation = {
+    movieCreateOne: MovieTC.getResolver('createOne'),
+    movieCreateMany: MovieTC.getResolver('createMany'),
+    movieUpdateById: MovieTC.getResolver('updateById'),
+    movieUpdateOne: MovieTC.getResolver('updateOne'),
+    movieUpdateMany: MovieTC.getResolver('updateMany'),
+    movieRemoveById: MovieTC.getResolver('removeById'),
+    movieRemoveOne: MovieTC.getResolver('removeOne'),
+    movieRemoveMany: MovieTC.getResolver('removeMany'),
+};
+
 MovieTC.addRelation(
     'Directors',
     {
@@ -76,4 +97,4 @@ MovieTC.addRelation(
     }
 )
 
-module.exports = {MovieSchema, Movie, MovieTC}
+module.exports = {MovieSchema, Movie, MovieTC, MovieQuery, MovieMutation}
