@@ -57,7 +57,7 @@ MovieTC.addRelation(
             skip: null,
             sort: null,
         },
-        projection: { Platform: true }
+        projection: { Platforms: true }
     }
 )
 
