@@ -23,4 +23,5 @@ schemaComposer.Mutation.addFields({
     ...PlatformMutation,
 });
 
-module.exports = schemaComposer.buildSchema();
+let schemaComposed = schemaComposer.buildSchema()
+module.exports = { schemaComposed, schemaComposer };

@@ -1,4 +1,5 @@
 const { Platform, PlatformTC } = require('../models/platform')
+const { MovieTC } = require('../models/movie')
 
 const PlatformQuery = {
     platformById: PlatformTC.getResolver('findById'),
@@ -20,5 +21,18 @@ const PlatformMutation = {
     platformRemoveOne: PlatformTC.getResolver('removeOne'),
     platformRemoveMany: PlatformTC.getResolver('removeMany'),
 };
+
+PlatformTC.addRelation(
+    'Movies',
+    {
+        resolver: MovieTC.getResolver('findByIds'),
+        prepareArgs: {
+            _ids: (source) => source.Movies.map( movie => movie ),
+            skip: null,
+            sort: null
+        },
+        projection: { Movies: true }   
+    }
+)
 
 module.exports = { PlatformQuery, PlatformMutation };

@@ -1,4 +1,5 @@
 const { Actor, ActorTC } = require('../models/actor')
+const { MovieTC } = require('../models/movie')
 
 const ActorQuery = {
     actorById: ActorTC.getResolver('findById'),
@@ -20,5 +21,18 @@ const ActorMutation = {
     actorRemoveOne: ActorTC.getResolver('removeOne'),
     actorRemoveMany: ActorTC.getResolver('removeMany'),
 };
+
+ActorTC.addRelation(
+    'Movies',
+    {
+        resolver: MovieTC.getResolver('findByIds'),
+        prepareArgs: {
+            _ids: (source) => source.Movies.map( movie => movie ),
+            skip: null,
+            sort: null
+        },
+        projection: { Movies: true }
+    }
+)
 
 module.exports = { ActorQuery, ActorMutation };
