@@ -128,6 +128,10 @@ module.exports = {
 
         try {   
 
+            let newDocsArr = await auditDocs(id, req)
+
+            console.log(newDocsArr)
+
             if (1===0) {
             let movieClear = await Movie.findByIdAndUpdate(
                 id, 
@@ -153,40 +157,46 @@ module.exports = {
             //     )
             //     return dir._id
             // }))
-            let dir = await Director.findOneAndUpdate()
+            // let dir = await Director.findOneAndUpdate()
 
             // THESE COULD MAYBE USE FINDONEANDUPDATE? 
-            let actorsArr = await Promise.all(actor.split(',').map( async (act) => {
-                let actorIns = await Actor.findOneAndUpdate(
-                    {Name: act.trim()}, 
-                    {
-                        $addToSet: {'Movies': id},
-                        $setOnInsert: {
-                            Name: act.trim(),
-                        }
-                    },
-                    {upsert: true, new: true}
-                )
-                return actorIns._id
-            }))
+            // let actorsArr = await Promise.all(actor.split(',').map( async (act) => {
+            //     let actorIns = await Actor.findOneAndUpdate(
+            //         {Name: act.trim()}, 
+            //         {
+            //             $addToSet: {'Movies': id},
+            //             $setOnInsert: {
+            //                 Name: act.trim(),
+            //             }
+            //         },
+            //         {upsert: true, new: true}
+            //     )
+            //     return actorIns._id
+            // }))
     
-            let platformArr = await Promise.all(platform.split(',').map( async (plat) => {
-                let platformIns = await Platform.findOneAndUpdate(
-                    {Name: plat.trim()},
-                    {
-                        $addToSet: {'Movies': id},
-                        $setOnInsert: {
-                            Name: plat.trim(),
-                        }
-                    },
-                    {upsert: true, new: true} 
-                )
-                return platformIns._id
-            }))
-    
-            let genreArr = genres.split(',').map( genre => {
-                return genre.trim()
-            })
+            // let platformArr = await Promise.all(platform.split(',').map( async (plat) => {
+            //     let platformIns = await Platform.findOneAndUpdate(
+            //         {Name: plat.trim()},
+            //         {
+            //             $addToSet: {'Movies': id},
+            //             $setOnInsert: {
+            //                 Name: plat.trim(),
+            //             }
+            //         },
+            //         {upsert: true, new: true} 
+            //     )
+            //     return platformIns._id
+            // }))
+
+            
+            
+            let newDocsArr = auditDocs(req, id, 'Movie')
+            
+            
+
+            // let genreArr = genres.split(',').map( genre => {
+            //     return genre.trim()
+            // })
                 
             movieClear.then( async () => {
 

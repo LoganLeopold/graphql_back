@@ -19,7 +19,7 @@ module.exports = {
         
         //Establish auditFor using url
         // let auditFor = req.baseUrl.charAt(1).toUpperCase() + req.baseUrl.slice(2) 
-        let auditFor = this.capitalize(req.baseUrl, 1, 2)
+        let auditFor = module.exports.capitalize(req.baseUrl, 1, 2)
 
         //Gathering models to audit
         let reqProps = Object.keys(req.body)
@@ -28,7 +28,7 @@ module.exports = {
 
             let propCap = prop.charAt(0).toUpperCase() + prop.slice(1)
 
-            if (mongoose.modelNames().includes(propCap)) {
+            if (Mongoose.modelNames().includes(propCap)) {
                 acc.push( [prop, propCap] )
             }
 
@@ -44,7 +44,6 @@ module.exports = {
                     //Get all documents that have the movie in their array using model
                     let currDocs = await Mongoose.model(arr[1]).find({[auditFor]: id})
                     
-
                     /*
                     ----------------------------------------------------------------------------
                     ----------------------------------------------------------------------------
@@ -71,7 +70,7 @@ module.exports = {
                     
                     //If they were in the req, they must go in 
                     let load = reqData.map( (item, i) => {
-                        load.push({
+                        let writeObj = {
                             updateOne: { 
                                 filter: {
                                     Name: item
@@ -84,28 +83,32 @@ module.exports = {
                                 },
                                 upsert: true,
                             }
-                        })
+                        }
+                        return writeObj
                     })        
 
                     let loadedDocs = await Mongoose.model(arr[1]).bulkWrite(load)
 
-                    //Wait for loaded docs to check for Ids from newly loaded reqData
-                    let newDocs = loadedDocs.then( async () => {
-                        return await Promise.all( reqData.map( (item, i) => {
+                    // Wait for loaded docs to check for Ids from newly loaded reqData
+                    let newDocs = await Promise.all( reqData.map( async (item, i) => {
                             let doc = await Mongoose.model(arr[1]).findOne({Name: item})
                             return doc._id
-                        }))
-                    })
+                    }))
         
         
-                    return [ prop, newDocs]
+                    return [ arr[0], newDocs ]
         
                 } 
+
             ))
+
+            return newData
 
         } catch (err) {
             console.log(err)
         }
+
+        return 
 
     },
 
@@ -120,6 +123,5 @@ module.exports = {
         return arr.join('')
 
     },
-
 
 } //END MODULE.EXPORTS
