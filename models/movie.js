@@ -1,9 +1,16 @@
 const compose = require('graphql-compose-mongoose')
 const mongoose = require('../db')
 const Schema = mongoose.Schema
-const { DirectorQuery: { directorByIds } } = require('../graph_schemas/director.gs')
+
+const { DirectorQuery } = require('../graph_schemas/director.gs')
+const { PlatformQuery } = require('../graph_schemas/platform_gs')
+
+const { directorById } = DirectorQuery
+const { platformByIds } = PlatformQuery
+
 const { ActorQuery } = require('../graph_schemas/actor_gs')
-const { PlatformQuery: { platformByIds } } = require('../graph_schemas/platform_gs')
+const { actorByIds } = ActorQuery
+console.log(actorByIds)
 
 const MovieSchema = new Schema({
 
@@ -35,19 +42,19 @@ const MovieTC = compose.composeWithMongoose(Movie)
 MovieTC.addRelation(
     'Directors',
     {
-        resolver: directorByIds,
+        resolver: directorById,
         prepareArgs: {
-            _ids: (source) => source.Directors.map( director => director ),
+            _ids: (source) => source.Director ,
             skip: null,
             sort: null
         },
-        projection: { Directors: true }
+        projection: { Director: true }
     }
 )
 MovieTC.addRelation(
     'Actors',
     {
-        resolver: ActorQuery.actorByIds,
+        resolver: actorByIds,
         prepareArgs: {
             _ids: (source) => source.Actors.map( actor => actor ),
             skip: null,
@@ -61,13 +68,12 @@ MovieTC.addRelation(
     {
         resolver: platformByIds,
         prepareArgs: {
-            _ids: (source) => source.Platforms.map( platform => platform._id ),
+            _ids: (source) => source.Platforms.map( platform => platform),
             skip: null,
             sort: null,
         },
         projection: { Platform: true }
     }
 )
-
 
 module.exports = {MovieSchema, Movie, MovieTC}

@@ -1,7 +1,9 @@
 const compose = require('graphql-compose-mongoose')
 const mongoose = require('../db')
 const Schema = mongoose.Schema
-const { MovieQuery: { movieByIds } } = require('../graph_schemas/movie_gs') 
+const { MovieQuery } = require('../graph_schemas/movie_gs') 
+
+const { movieByIds } = MovieQuery
 
 const ActorSchema = new Schema({
 
