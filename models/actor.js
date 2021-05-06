@@ -1,9 +1,7 @@
 const compose = require('graphql-compose-mongoose')
 const mongoose = require('../db')
 const Schema = mongoose.Schema
-const { MovieQuery } = require('../graph_schemas/movie_gs') 
-
-const { movieByIds } = MovieQuery
+const { MovieQuery: { movieByIds } } = require('../graph_schemas/movie_gs') 
 
 const ActorSchema = new Schema({
 
@@ -17,9 +15,6 @@ const ActorSchema = new Schema({
 
 })
 
-// const ActorSchema = composeWithMongoose(Actor)
-
-
 const Actor = mongoose.model('Actor', ActorSchema)
 const ActorTC = compose.composeWithMongoose(Actor)
 ActorTC.addRelation(
@@ -27,7 +22,7 @@ ActorTC.addRelation(
     {
         resolver: movieByIds,
         prepareArgs: {
-            _ids: (source) => source.Movies.map( movie => movie),
+            _ids: (source) => source.Movies.map( movie => movie ),
             skip: null,
             sort: null
         },
