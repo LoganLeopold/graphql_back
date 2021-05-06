@@ -26,10 +26,13 @@ module.exports = {
 
         let presentModels = reqProps.reduce( ( acc, prop ) => {
 
-            let propCap = prop.charAt(0).toUpperCase() + prop.slice(1)
+            let propCap = module.exports.capitalize(prop, 0, 1)
 
             if (Mongoose.modelNames().includes(propCap)) {
-                acc.push( [prop, propCap] )
+                let modelProp = module.exports.pluralize(propCap)
+                if (Object.keys(Mongoose.model(auditFor).schema.paths).includes(modelProp) && Mongoose.model(auditFor).schema.paths[`${modelProp}`].instance === 'Array') {
+                    acc.push( [prop, propCap] )
+                }
             }
 
             return acc

@@ -144,16 +144,6 @@ module.exports = {
             //     }
             // )
 
-            let update = {}
-            
-            let newDocsArr = await auditDocs(id, req)
-
-            console.log(newDocsArr)
-
-            newDocsArr.forEach( model => update[`${pluralize(capitalize(model[0], 0, 1))}`] = model[1] )
-
-            console.log(update)
-
             /*
             ------------------------------------------------------------------------------------
             ------------------------------------------------------------------------------------
@@ -161,10 +151,23 @@ module.exports = {
             ------------------------------------------------------------------------------------
             ------------------------------------------------------------------------------------
             */
+
+            let update = {}
             
-            // let genreArr = genres.split(',').map( genre => {
-            //     return genre.trim()
-            // })
+            let newDocsArr = await auditDocs(id, req)
+
+            console.log(newDocsArr)
+
+            newDocsArr.forEach( model => update[`${pluralize(capitalize(model[0], 0, 1))}`] = model[1] )
+            
+            let genreArr = genre.split(',').map( genre => {
+                return genre.trim()
+            })
+
+            update["Name"] = name
+            update["Tomato_Public"] = tom_pub
+            update["Tomato_Critic"] = tom_crit
+            update["Genres"] = genreArr
                 
             // movieClear.then( async () => {
 
