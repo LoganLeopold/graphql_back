@@ -156,8 +156,6 @@ module.exports = {
             
             let newDocsArr = await auditDocs(id, req)
 
-            console.log(newDocsArr)
-
             newDocsArr.forEach( model => update[`${pluralize(capitalize(model[0], 0, 1))}`] = model[1] )
             
             let genreArr = genre.split(',').map( genre => {

@@ -18,8 +18,8 @@ module.exports = {
     auditDocs: async ( id, req ) => {
         
         //Establish auditFor using url
-        // let auditFor = req.baseUrl.charAt(1).toUpperCase() + req.baseUrl.slice(2) 
         let auditFor = module.exports.capitalize(req.baseUrl, 1, 2)
+        let auditForSchema = module.exports.pluralize(auditFor)
 
         //Gathering models to audit
         let reqProps = Object.keys(req.body)
@@ -29,10 +29,7 @@ module.exports = {
             let propCap = module.exports.capitalize(prop, 0, 1)
 
             if (Mongoose.modelNames().includes(propCap)) {
-                let modelProp = module.exports.pluralize(propCap)
-                if (Object.keys(Mongoose.model(auditFor).schema.paths).includes(modelProp) && Mongoose.model(auditFor).schema.paths[`${modelProp}`].instance === 'Array') {
-                    acc.push( [prop, propCap] )
-                }
+                acc.push( [prop, propCap] )
             }
 
             return acc
@@ -44,62 +41,96 @@ module.exports = {
             //Loop through presentModels and use prop from req and model name array to carry out filtering below and return final array of promises
             let newData = await Promise.all( presentModels.map( async (arr) => {
         
-                    //Get all documents that have the movie in their array using model
-                    let currDocs = await Mongoose.model(arr[1]).find({[auditFor]: id})
-                    
                     /*
                     ----------------------------------------------------------------------------
                     ----------------------------------------------------------------------------
-                    The next project will be bulk-writing through this whole section with one 
-                    load. I should just load in a query for bulk write based on whether or not
-                    it's in the reqData. 
+                    This basically handles the Director case in movie where the schematype is
+                    just an ObjectID. Ultimately this could be expanded to make checks on 
+                    schematypes and then handle incoming req data appropriately for every 
+                    type present on model. 
                     ----------------------------------------------------------------------------
                     ----------------------------------------------------------------------------
                     */
 
-                    //Use request data to filter them:
-                    let reqData = req.body[arr[0]].split(',').map( model => model.trim())
-                    currDocs.forEach( (mod, i) => {
-                        if (!reqModels.includes(mod.Name)) {
-                            currDocs.splice(i, 0)
-                        } 
-                    })
-                
-                    //If they were not present, delete the movie id
-                    let deletions = await Mongoose.model(arr[1]).updateMany(
-                        { _id: { $in: currDocs } },
-                        { $pull: { [auditFor]: id } },
-                    )
+                    if (Object.keys(Mongoose.model(auditFor).schema.paths).includes(arr[1]) && Mongoose.model(auditFor).schema.paths[`${arr[1]}`].instance === 'ObjectID') { 
+
+                        let currDoc = await Mongoose.model(arr[1]).find({[auditForSchema]: id})
+
+                        let reqDataName = req.body[arr[0]].split(',')[0].trim()
+
+                        let insertDoc = currDoc[0].Name === reqDataName ? currDoc[0]._id : await Mongoose.model(arr[1]).findOneAndUpdate(
+                            {Name: reqDataName},
+                            {
+                                $addToSet: { [auditForSchema]: id },
+                                $setOnInsert: {
+                                    Name: reqDataName
+                                }
+                            },
+                            {new: true, upsert: true}
+                        )
+
+                        return [ arr[0], [insertDoc._id] ]
+
+                     } else {
+
+                        //Get all documents that have the movie in their array using model
+                        let currDocs = await Mongoose.model(arr[1]).find({[auditForSchema]: id})
+
+                        /*
+                        ----------------------------------------------------------------------------
+                        ----------------------------------------------------------------------------
+                        The next project will be bulk-writing through this whole section with one 
+                        load. I should just load in a query for bulk write based on whether or not
+                        it's in the reqData. 
+                        ----------------------------------------------------------------------------
+                        ----------------------------------------------------------------------------
+                        */
+
+                        //Use request data to filter them:
+                        let reqData = req.body[arr[0]].split(',').map( model => model.trim())
+                        currDocs.forEach( (mod, i) => {
+                            if (!reqData.includes(mod.Name)) {
+                                currDocs.splice(i, 0)
+                            } 
+                        })
                     
-                    //If they were in the req, they must go in 
-                    let load = reqData.map( (item, i) => {
-                        let writeObj = {
-                            updateOne: { 
-                                filter: {
-                                    Name: item
-                                },
-                                update: {
-                                    $addToSet: { [auditFor]: id },
-                                    $setOnInsert: {
+                        //If they were not present, delete the movie id
+                        let deletions = await Mongoose.model(arr[1]).updateMany(
+                            { _id: { $in: currDocs } },
+                            { $pull: { [auditForSchema]: id } },
+                        )
+                        
+                        //If they were in the req, they must go in 
+                        let load = reqData.map( (item, i) => {
+                            let writeObj = {
+                                updateOne: { 
+                                    filter: {
                                         Name: item
-                                    }
-                                },
-                                upsert: true,
+                                    },
+                                    update: {
+                                        $addToSet: { [auditForSchema]: id },
+                                        $setOnInsert: {
+                                            Name: item
+                                        }
+                                    },
+                                    upsert: true,
+                                }
                             }
-                        }
-                        return writeObj
-                    })        
+                            return writeObj
+                        })        
 
-                    let loadedDocs = await Mongoose.model(arr[1]).bulkWrite(load)
+                        let loadedDocs = await Mongoose.model(arr[1]).bulkWrite(load)
 
-                    // Wait for loaded docs to check for Ids from newly loaded reqData
-                    let newDocs = await Promise.all( reqData.map( async (item, i) => {
-                            let doc = await Mongoose.model(arr[1]).findOne({Name: item})
-                            return doc._id
-                    }))
-        
-        
-                    return [ arr[0], newDocs ]
+                        // Wait for loaded docs to check for Ids from newly loaded reqData
+                        let newDocs = await Promise.all( reqData.map( async (item, i) => {
+                                let doc = await Mongoose.model(arr[1]).findOne({Name: item})
+                                return doc._id
+                        }))
+            
+            
+                        return [ arr[0], newDocs ]
+
+                     }
         
                 } 
 
