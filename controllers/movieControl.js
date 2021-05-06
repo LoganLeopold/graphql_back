@@ -3,7 +3,7 @@ const { Movie } = require("../models/movie")
 const { Director } = require("../models/director")
 const { Platform } = require("../models/platform")
 const { Actor } = require("../models/actor")
-const { auditDocs, capitalize, depluralize }  = require('../utilities')
+const { auditDocs, capitalize, depluralize, pluralize }  = require('../utilities');
 
 module.exports = {
 
@@ -143,10 +143,16 @@ module.exports = {
             //         new: true
             //     }
             // )
+
+            let update = {}
             
             let newDocsArr = await auditDocs(id, req)
 
             console.log(newDocsArr)
+
+            newDocsArr.forEach( model => update[`${pluralize(capitalize(model[0], 0, 1))}`] = model[1] )
+
+            console.log(update)
 
             /*
             ------------------------------------------------------------------------------------
