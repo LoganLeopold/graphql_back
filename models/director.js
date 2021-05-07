@@ -17,6 +17,4 @@ const DirectorSchema = new Schema({
 const Director = mongoose.model('Director', DirectorSchema)
 const DirectorTC = compose.composeWithMongoose(Director)
 
-console.log('Director Model')
-
 module.exports = {DirectorSchema, Director, DirectorTC}

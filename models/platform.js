@@ -17,6 +17,4 @@ const PlatformSchema = new Schema({
 const Platform = mongoose.model('Platform', PlatformSchema)
 const PlatformTC = compose.composeWithMongoose(Platform)
 
-console.log('Platform Model')
-
 module.exports = {PlatformSchema, Platform, PlatformTC}
