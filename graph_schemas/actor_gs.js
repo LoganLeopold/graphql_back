@@ -35,4 +35,31 @@ ActorTC.addRelation(
     }
 )
 
+/* Started from scratch, but going to try to resolve.wrap() or like below */
+// ActorMutation['actorUpdateByIdCascade'] = ActorTC.addResolver({
+//     name: 'actorUpdateByIdCascade',
+//     args: {  }
+// })
+
+ActorMutation['actorUpdateByIdCascade'] = ActorTC.getResolver('updateById').wrap( newResolver => {
+
+    newResolver.name = 'actorUpdateByIdCascade'
+
+    newResolver.resolve = async ({args}) => console.log(args)
+
+}) 
+
+// const findManyReduced = AuthorTC.getResolver('findMany').wrap(newResolver => {
+//     // for new created resolver, clone its `filter` argument with a new name
+//     newResolver.cloneArg('filter', 'AuthorFilterForUsers');
+//     // remove some filter fields to which regular users should not have access
+//     newResolver.getArgTC('filter').removeFields(['age', 'other_sensetive_filter']);
+//     // and return modified resolver with new set of args
+//     return newResolver;
+//   });
+
+// console.log(ActorMutation.actorUpdateMany.args.filter.type._gqType)
+// FilterUpdateManyActorInput
+// console.log(ActorMutation.actorUpdateMany.args.filter.type._gqcFields)
+
 module.exports = { ActorQuery, ActorMutation };

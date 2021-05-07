@@ -22,6 +22,16 @@ schemaComposer.Mutation.addFields({
     ...MovieMutation,
     ...PlatformMutation,
 });
+        
+/*
+This resolver ultimately needs to:
+-Take ids from source
+-Use ids to go to db and update applicable subfields
+*/
+// const auditFields = schemaComposer.createResolver({
+//     name: 'auditFields',
+//     type: ,
+// })
 
 let schemaComposed = schemaComposer.buildSchema()
 module.exports = { schemaComposed, schemaComposer };
