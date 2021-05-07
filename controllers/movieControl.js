@@ -128,21 +128,21 @@ module.exports = {
 
         try {   
 
-            // let movieClear = await Movie.findByIdAndUpdate(
-            //     id, 
-            //     {
-            //         Name: '',
-            //         Director: null,
-            //         Actors: [],
-            //         Platforms: [],
-            //         TomatoPublic: null,
-            //         TomatoCritic: null,
-            //         Genres: []
-            //     },
-            //     {
-            //         new: true
-            //     }
-            // )
+            let movieClear = await Movie.findByIdAndUpdate(
+                id, 
+                {
+                    Name: '',
+                    Director: null,
+                    Actors: [],
+                    Platforms: [],
+                    TomatoPublic: null,
+                    TomatoCritic: null,
+                    Genres: []
+                },
+                {
+                    new: true
+                }
+            )
 
             /*
             ------------------------------------------------------------------------------------
@@ -163,31 +163,20 @@ module.exports = {
             })
 
             update["Name"] = name
-            update["Tomato_Public"] = tom_pub
-            update["Tomato_Critic"] = tom_crit
+            update["TomatoPublic"] = tom_pub
+            update["TomatoCritic"] = tom_crit
             update["Genres"] = genreArr
                 
-            // movieClear.then( async () => {
 
-            //     let movieNew = await Movie.findByIdAndUpdate(
-            //         id, 
-            //         {
-            //             Name: name.trim(),
-            //             Director: directorArr,
-            //             Actors: actorsArr,
-            //             Platforms: platformArr,
-            //             TomatoPublic: tom_pub,
-            //             TomatoCritic: tom_crit,
-            //             Genres: genreArr
-            //         },
-            //         {
-            //             new: true
-            //         }
-            //     )
-                
-            //     res.send(movieNew)
-
-            // })
+            let movieNew = await Movie.findByIdAndUpdate(
+                id, 
+                update,
+                {
+                    new: true
+                }
+            )
+            
+            res.send(movieNew)
 
         } catch (err) {
             console.log(err)
