@@ -22,6 +22,23 @@ schemaComposer.Mutation.addFields({
     ...MovieMutation,
     ...PlatformMutation,
 });
+
+let byIds = schemaComposer.createResolver({
+    name: 'modelIndependent',
+    type: "String!",
+    args: {
+        modelId: "String!",
+        updateId: "String!",
+    },
+    resolve: async ({source, args, context, info}) => {
+        console.log(args)
+        return "hello world"
+    }
+})
+
+schemaComposer.Mutation.addFields({
+    modelIndependent: byIds
+})
         
 /*
 This resolver ultimately needs to:

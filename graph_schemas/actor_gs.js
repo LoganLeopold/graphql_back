@@ -1,3 +1,4 @@
+const { NonNullComposer } = require('graphql-compose');
 const { Actor, ActorTC } = require('../models/actor')
 const { MovieTC } = require('../models/movie')
 
@@ -41,26 +42,23 @@ ActorTC.addRelation(
 //     args: {  }
 // })
 
+// Good example of working resolver wrapper but want to try this logic in index_gs for model-independent synthesis
 ActorMutation['actorUpdateByIdCascade'] = ActorTC.getResolver('updateById').wrap( newResolver => {
+
+    newResolver.addArgs( {tester: "String!"} )
 
     newResolver.name = 'actorUpdateByIdCascade'
 
-    //
-    newResolver.resolve = async ({args}) => console.log(args)
+    console.log(newResolver)
+    newResolver.resolve = async ({args}) => {
+        // console.log(Object.entries(args))
+        let { _id } = args
+
+
+
+    }
 
 }) 
 
-// const findManyReduced = AuthorTC.getResolver('findMany').wrap(newResolver => {
-//     // for new created resolver, clone its `filter` argument with a new name
-//     newResolver.cloneArg('filter', 'AuthorFilterForUsers');
-//     // remove some filter fields to which regular users should not have access
-//     newResolver.getArgTC('filter').removeFields(['age', 'other_sensetive_filter']);
-//     // and return modified resolver with new set of args
-//     return newResolver;
-//   });
-
-// console.log(ActorMutation.actorUpdateMany.args.filter.type._gqType)
-// FilterUpdateManyActorInput
-// console.log(ActorMutation.actorUpdateMany.args.filter.type._gqcFields)
 
 module.exports = { ActorQuery, ActorMutation };
