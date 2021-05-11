@@ -82,7 +82,7 @@ module.exports = {
     
                let platformArr = await Promise.all(platform.split(',').map( async (plat) => {
                    let platformIns = await Platform.findOneAndUpdate(
-                       {Name: platf.trim()},
+                       {Name: plat.trim()},
                        {
                         $push: {Movies: movieID},
                         $setOnInsert: {
@@ -94,7 +94,7 @@ module.exports = {
                    return platformIns._id
                }))
     
-               let genreArr = genres.split(',').map( genre => {
+               let genreArr = genre.split(',').map( genre => {
                    return genre.trim()
                })
                 

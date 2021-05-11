@@ -1,6 +1,6 @@
 const { NonNullComposer } = require('graphql-compose');
 const { Actor, ActorTC } = require('../models/actor')
-const { MovieTC } = require('../models/movie')
+const { Movie, MovieTC } = require('../models/movie')
 
 const ActorQuery = {
     actorById: ActorTC.getResolver('findById'),
@@ -45,17 +45,26 @@ ActorTC.addRelation(
 // Good example of working resolver wrapper but want to try this logic in index_gs for model-independent synthesis
 ActorMutation['actorUpdateByIdCascade'] = ActorTC.getResolver('updateById').wrap( newResolver => {
 
-    newResolver.addArgs( {tester: "String!"} )
-
+    newResolver.addArgs( {modelId: "String!"} )
+    newResolver.removeArg('record')
+    newResolver.type = ActorTC
     newResolver.name = 'actorUpdateByIdCascade'
 
-    console.log(newResolver)
     newResolver.resolve = async ({args}) => {
-        // console.log(Object.entries(args))
-        let { _id } = args
+        console.log(args)
+        let { _id, modelId } = args 
 
+        let newActor = await Actor.findByIdAndUpdate(
+            {$pull: { Movies: _id } },  //update
+            {overwrite: false, new: true} //options
+        )
 
+        let newMovie = await Movie.findByIdAndUpdate(
+            {$pull: { Actors: modelId } },  //update
+            {overwrite: false, new: true} //options
+        )
 
+        return newActor._id
     }
 
 }) 
