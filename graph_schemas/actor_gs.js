@@ -1,3 +1,4 @@
+const Mongoose = require('mongoose')
 const { NonNullComposer } = require('graphql-compose');
 const { actors, ActorTC } = require('../models/actor')
 const { movies, MovieTC } = require('../models/movie')
@@ -73,6 +74,34 @@ ActorMutation['actorUpdateByIdCascade'] = ActorTC.getResolver('updateById').wrap
     }
 
 }) 
+
+ActorMutation['nestedAuthorDeleteHandle'] = ActorTC.addResolver({
+    name: 'nestedAuthorDeleteHandle',
+    args: { 
+        actorId: 'Int',
+        docId: 'Int', 
+        docModel: 'String',
+    },
+    type: "String",
+    resolve: async ({ source, args }) => {
+
+        const { actorId, docId, docModel } = args
+
+        let newDoc = await Mongoose.model('docModel').findByIdAndUpdate(
+            docId, 
+            {$pull: { actors: actorId }},
+            {overwrite: false, new: true}
+        )
+
+        let newActor = await actors.findByIdAndUpdate(
+            actorId,
+            {$pull: { [docModel]: actorId } },
+            {overwrite: false, new: true}
+        )
+
+        return newDoc._id;
+    },
+})
 
 
 module.exports = { ActorQuery, ActorMutation };
