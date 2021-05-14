@@ -1,4 +1,4 @@
-const { Platform } = require("../models/platform")
+const { platforms } = require("../models/platform")
 
 module.exports = {
 
@@ -6,9 +6,9 @@ module.exports = {
 
         let { id } = req.params
 
-        let platforms = await Platform.find({ Movies: id })
+        let platformsRes = await platforms.find({ Movies: id })
 
-        res.send(platforms)
+        res.send(platformsRes)
 
     }
 

@@ -4,8 +4,8 @@ const Schema = mongoose.Schema
 
 const ActorSchema = new Schema({
     
-    Name: String,
-    Movies: [
+    name: String,
+    movies: [
         {
             type: Schema.Types.ObjectId,
             ref: 'Movie'
@@ -14,7 +14,7 @@ const ActorSchema = new Schema({
     
 })
 
-const Actor = mongoose.model('Actor', ActorSchema)
-const ActorTC = compose.composeWithMongoose(Actor)
+const actors = mongoose.model('Actor', ActorSchema)
+const ActorTC = compose.composeWithMongoose(actors)
 
-module.exports = { ActorSchema, Actor, ActorTC }
+module.exports = { ActorSchema, actors, ActorTC }

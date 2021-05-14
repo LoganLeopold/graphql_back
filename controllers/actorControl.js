@@ -1,17 +1,17 @@
-const { Actor } = require("../models/actor")
+const { actors } = require("../models/actor")
 
 module.exports = {
 
     list: async (req,res) => {
-        let actors = await Actor.find({})
-        res.send(actors)
+        let actorsRes = await actors.find({})
+        res.send(actorsRes)
     },
 
     create: async (req,res, next) => {
         try {
-            let actor = await Actor.create({
-                Name: req.body.name,
-                Movies: []
+            let actor = await actors.create({
+                name: req.body.name,
+                movies: []
             })
             res.send(actor)
         } catch (err) {
@@ -23,9 +23,9 @@ module.exports = {
         
         let { id } = req.params
 
-        let actors = await Actor.find({ Movies: id })
+        let actorsRes = await actors.find({ movies: id })
 
-        res.send(actors)
+        res.send(actorsRes)
 
     }
 

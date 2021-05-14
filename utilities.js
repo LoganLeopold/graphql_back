@@ -18,28 +18,28 @@ module.exports = {
     auditDocs: async ( id, req ) => {
         
         //Establish auditFor using url
-        let auditFor = module.exports.capitalize(req.baseUrl, 1, 2)
-        let auditForSchema = module.exports.pluralize(auditFor)
+        // let auditFor = module.exports.capitalize(req.baseUrl, 1, 2)
+        // let auditForSchema = module.exports.pluralize(auditFor)
 
         //Gathering models to audit
         let reqProps = Object.keys(req.body)
 
-        let presentModels = reqProps.reduce( ( acc, prop ) => {
+        // let presentModels = reqProps.reduce( ( acc, prop ) => {
 
-            let propCap = module.exports.capitalize(prop, 0, 1)
+        //     let propCap = prop
 
-            if (Mongoose.modelNames().includes(propCap)) {
-                acc.push( [prop, propCap] )
-            }
+        //     if (Mongoose.modelNames().includes(propCap)) {
+        //         acc.push( [prop, propCap] )
+        //     }
 
-            return acc
+        //     return acc
 
-        }, [])
+        // }, [])
 
         try {
 
             //Loop through presentModels and use prop from req and model name array to carry out filtering below and return final array of promises
-            let newData = await Promise.all( presentModels.map( async (arr) => {
+            let newData = await Promise.all( reqProps.map( async (reqProp) => {
         
                     /*
                     ----------------------------------------------------------------------------
@@ -52,13 +52,13 @@ module.exports = {
                     ----------------------------------------------------------------------------
                     */
 
-                    if (Object.keys(Mongoose.model(auditFor).schema.paths).includes(arr[1]) && Mongoose.model(auditFor).schema.paths[`${arr[1]}`].instance === 'ObjectID') { 
+                    if (Object.keys(Mongoose.model(auditFor).schema.paths).includes(reqProp) && Mongoose.model(auditFor).schema.paths[`${reqProp}`].instance === 'ObjectID') { 
 
-                        let currDoc = await Mongoose.model(arr[1]).find({[auditForSchema]: id})
+                        let currDoc = await Mongoose.model(reqProp).find({[auditForSchema]: id})
 
-                        let reqDataName = req.body[arr[0]].split(',')[0].trim()
+                        let reqDataName = req.body[reqProp].split(',')[0].trim()
 
-                        let insertDoc = currDoc[0].Name === reqDataName ? currDoc[0]._id : await Mongoose.model(arr[1]).findOneAndUpdate(
+                        let insertDoc = currDoc[0].Name === reqDataName ? currDoc[0]._id : await Mongoose.model(reqProp).findOneAndUpdate(
                             {Name: reqDataName},
                             {
                                 $addToSet: { [auditForSchema]: id },
@@ -69,12 +69,12 @@ module.exports = {
                             {new: true, upsert: true}
                         )
 
-                        return [ arr[0], [insertDoc._id] ]
+                        return [ reqProp, [insertDoc._id] ]
 
                      } else {
 
                         //Get all documents that have the movie in their array using model
-                        let currDocs = await Mongoose.model(arr[1]).find({[auditForSchema]: id})
+                        let currDocs = await Mongoose.model(reqProp).find({[auditForSchema]: id})
 
                         /*
                         ----------------------------------------------------------------------------
@@ -87,7 +87,7 @@ module.exports = {
                         */
 
                         //Use request data to filter them:
-                        let reqData = req.body[arr[0]].split(',').map( model => model.trim())
+                        let reqData = req.body[reqProp].split(',').map( model => model.trim())
                         currDocs.forEach( (mod, i) => {
                             if (!reqData.includes(mod.Name)) {
                                 currDocs.splice(i, 0)
@@ -95,7 +95,7 @@ module.exports = {
                         })
                     
                         //If they were not present, delete the movie id
-                        let deletions = await Mongoose.model(arr[1]).updateMany(
+                        let deletions = await Mongoose.model(reqProp).updateMany(
                             { _id: { $in: currDocs } },
                             { $pull: { [auditForSchema]: id } },
                         )
@@ -119,16 +119,16 @@ module.exports = {
                             return writeObj
                         })        
 
-                        let loadedDocs = await Mongoose.model(arr[1]).bulkWrite(load)
+                        let loadedDocs = await Mongoose.model(reqProp).bulkWrite(load)
 
                         // Wait for loaded docs to check for Ids from newly loaded reqData
                         let newDocs = await Promise.all( reqData.map( async (item, i) => {
-                                let doc = await Mongoose.model(arr[1]).findOne({Name: item})
+                                let doc = await Mongoose.model(reqProp).findOne({Name: item})
                                 return doc._id
                         }))
             
             
-                        return [ arr[0], newDocs ]
+                        return [ reqProp, newDocs ]
 
                      }
         

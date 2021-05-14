@@ -1,4 +1,4 @@
-const { Director, DirectorTC } = require('../models/director')
+const { directors, DirectorTC } = require('../models/director')
 const { MovieTC } = require('../models/movie')
 
 const DirectorQuery = {
@@ -23,15 +23,15 @@ const DirectorMutation = {
 };
 
 DirectorTC.addRelation(
-    'Movies',
+    'movies',
     {
         resolver: MovieTC.getResolver('findByIds'),
         prepareArgs: {
-            _ids: (source) => source.Movies.map( movie => movie ),
+            _ids: (source) => source.movies.map( movie => movie ),
             skip: null,
             sort: null
         },
-        projection: { Movies: true }
+        projection: { movies: true }
     }
 )
 

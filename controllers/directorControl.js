@@ -1,20 +1,20 @@
 const { attachDirectiveResolvers } = require("graphql-tools")
-const { Director } = require("../models/director")
+const { directors } = require("../models/director")
 
 module.exports = {
 
     list: async (req, res) => {
-        let directors = await Director.find({})
-        res.send(directors)
+        let directorsRes = await directors.find({})
+        res.send(directorsRes)
     },
 
     findMany: async (req, res) => {
         
         let { id } = req.params
 
-        let directors = await Director.find({ Movies: id })
+        let directorsRes = await directors.find({ movies: id })
 
-        res.send(directors)
+        res.send(directorsRes)
 
     }
 

@@ -4,8 +4,8 @@ const Schema = mongoose.Schema
 
 const PlatformSchema = new Schema({
 
-    Name: String,
-    Movies: [
+    name: String,
+    movies: [
         {
             type: Schema.Types.ObjectId,
             ref: 'Movie'
@@ -14,7 +14,7 @@ const PlatformSchema = new Schema({
 
 })
 
-const Platform = mongoose.model('Platform', PlatformSchema)
-const PlatformTC = compose.composeWithMongoose(Platform)
+const platforms = mongoose.model('Platform', PlatformSchema)
+const PlatformTC = compose.composeWithMongoose(platforms)
 
-module.exports = {PlatformSchema, Platform, PlatformTC}
+module.exports = {PlatformSchema, platforms, PlatformTC}

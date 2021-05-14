@@ -4,8 +4,8 @@ const Schema = mongoose.Schema
 
 const DirectorSchema = new Schema({
 
-    Name: String,
-    Movies: [
+    name: String,
+    movies: [
         {
             type: Schema.Types.ObjectId,
             ref: 'Movie'
@@ -14,7 +14,7 @@ const DirectorSchema = new Schema({
 
 })
 
-const Director = mongoose.model('Director', DirectorSchema)
-const DirectorTC = compose.composeWithMongoose(Director)
+const directors = mongoose.model('Director', DirectorSchema)
+const DirectorTC = compose.composeWithMongoose(directors)
 
-module.exports = {DirectorSchema, Director, DirectorTC}
+module.exports = {DirectorSchema, directors, DirectorTC}

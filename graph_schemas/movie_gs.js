@@ -1,4 +1,4 @@
-const { Movie, MovieTC } = require('../models/movie')
+const { movies, MovieTC } = require('../models/movie')
 const { ActorTC } = require('../models/actor')
 const { DirectorTC } = require('../models/director')
 const { PlatformTC } = require('../models/platform')
@@ -25,39 +25,39 @@ const MovieMutation = {
 };
 
 MovieTC.addRelation(
-    'Directors',
+    'directors',
     {
         resolver: DirectorTC.getResolver('findById'),
         prepareArgs: {
-            _ids: (source) => source.Director ,
+            _ids: (source) => source.directors.map( dir => dir._id ) ,
             skip: null,
             sort: null
         },
-        projection: { Director: true }
+        projection: { directors: true }
     }
 )
 MovieTC.addRelation(
-    'Actors',
+    'actors',
     {
         resolver: ActorTC.getResolver('findByIds'),
         prepareArgs: {
-            _ids: (source) => source.Actors.map( actor => actor ),
+            _ids: (source) => source.actors.map( actor => actor ),
             skip: null,
             sort: null
         },
-        projection: { Actors: true }
+        projection: { actors: true }
     }
 )
 MovieTC.addRelation(
-    'Platforms',
+    'platforms',
     {
         resolver: PlatformTC.getResolver('findByIds'),
         prepareArgs: {
-            _ids: (source) => source.Platforms.map( platform => platform),
+            _ids: (source) => source.platforms.map( platform => platform),
             skip: null,
             sort: null,
         },
-        projection: { Platforms: true }
+        projection: { platforms: true }
     }
 )
 

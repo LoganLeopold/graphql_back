@@ -1,4 +1,4 @@
-const { Platform, PlatformTC } = require('../models/platform')
+const { platforms, PlatformTC } = require('../models/platform')
 const { MovieTC } = require('../models/movie')
 
 const PlatformQuery = {
@@ -27,7 +27,7 @@ PlatformTC.addRelation(
     {
         resolver: MovieTC.getResolver('findByIds'),
         prepareArgs: {
-            _ids: (source) => source.Movies.map( movie => movie ),
+            _ids: (source) => source.movies.map( movie => movie ),
             skip: null,
             sort: null
         },

@@ -1,15 +1,15 @@
 var mongoose = require('mongoose');
-const { Movie } = require("../models/movie")
-const { Director } = require("../models/director")
-const { Platform } = require("../models/platform")
-const { Actor } = require("../models/actor")
-const { auditDocs, capitalize, depluralize, pluralize }  = require('../utilities');
+const { movies: Movie } = require("../models/movie")
+const { directors: Director } = require("../models/director")
+const { platforms: Platform } = require("../models/platform")
+const { actors: Actor} = require("../models/actor")
+const { auditDocs, capitalize, depluralize, pluralize } = require('../utilities');
 
 module.exports = {
 
     list: async (req, res) => {
-        let movies = await Movie.find({})
-        res.send(movies)
+        let moviesRes = await Movie.find({})
+        res.send(moviesRes)
     },
 
     findOne: async (req, res) => {
@@ -35,44 +35,45 @@ module.exports = {
         // 1
         const { 
             name, 
-            director,
-            actor, 
-            platform, 
+            directors,
+            actors, 
+            platforms, 
             tom_pub, 
             tom_crit, 
-            genre
+            genres
         } = req.body;
 
         try {   
 
            // 2
-           let movie = await Movie.findOne({Name: name.trim()})
+           let movie = await Movie.findOne({name: name.trim()})
 
            if (!movie) {
 
                let movieID = mongoose.Types.ObjectId()
     
                // 3
-               let directorCheck = await Director.findOneAndUpdate(
-                    {Name: director.trim()}, 
-                    {
-                        $push: {Movies: movieID},
-                        $setOnInsert: {
-                            Name: director.trim(),
-                        }
-                    },
-                    {upsert: true, new: true}
-               )
-    
-               let directorID = directorCheck._id
+                let directorsArr = await Promise.all(directors.split(',').map( async (dir, i) => {
+                    let dirIns = await Director.findOneAndUpdate(
+                        {name: dir.trim()}, 
+                        {
+                            $push: {movies: movieID},
+                            $setOnInsert: {
+                                name: dir.trim(),
+                            }
+                        },
+                        {upsert: true, new: true}
+                    )
+                    return dirIns._id
+                }))
 
                 let actorsArr = await Promise.all(actor.split(',').map( async (act) => {
                     let actorIns = await Actor.findOneAndUpdate(
-                        {Name: act.trim()}, 
+                        {name: act.trim()}, 
                         {
-                            $push: {Movies: movieID},
+                            $push: {movies: movieID},
                             $setOnInsert: {
-                                Name: act.trim(),
+                                name: act.trim(),
                             }
                         },
                         {upsert: true, new: true}
@@ -82,11 +83,11 @@ module.exports = {
     
                let platformArr = await Promise.all(platform.split(',').map( async (plat) => {
                    let platformIns = await Platform.findOneAndUpdate(
-                       {Name: plat.trim()},
+                       {name: plat.trim()},
                        {
-                        $push: {Movies: movieID},
+                        $push: {movies: movieID},
                         $setOnInsert: {
-                            Name: plat.trim(),
+                            name: plat.trim(),
                         }
                     },
                        {upsert: true, new: true} 
@@ -98,15 +99,15 @@ module.exports = {
                    return genre.trim()
                })
                 
-               let movieNew = await Movie.create({
+               let movieNew = await movies.create({
                     _id: movieID,
-                    Name: name.trim(),
-                    Director: directorID,
-                    Actors: actorsArr,
-                    Platforms: platformArr,
-                    TomatoPublic: tom_pub,
-                    TomatoCritic: tom_crit,
-                    Genres: genreArr
+                    name: name.trim(),
+                    directors: directorsArr,
+                    actors: actorsArr,
+                    platforms: platformArr,
+                    tomatopublic: tom_pub,
+                    tomatocritic: tom_crit,
+                    genres: genreArr
                })
 
                res.send(movieNew)
@@ -122,22 +123,22 @@ module.exports = {
 
     update: async (req, res) => {
 
-        const { name, director, actor, platform, tom_pub, tom_crit, genre } = req.body;
+        const { name, director, actors, platforms, tom_pub, tom_crit, genres } = req.body;
 
         const { id } = req.params 
 
         try {   
 
-            let movieClear = await Movie.findByIdAndUpdate(
+            let movieClear = await movies.findByIdAndUpdate(
                 id, 
                 {
-                    Name: '',
-                    Director: null,
-                    Actors: [],
-                    Platforms: [],
-                    TomatoPublic: null,
-                    TomatoCritic: null,
-                    Genres: []
+                    name: '',
+                    director: null,
+                    actors: [],
+                    platforms: [],
+                    tomatoPublic: null,
+                    tomatoCritic: null,
+                    genres: []
                 },
                 {
                     new: true
@@ -156,7 +157,7 @@ module.exports = {
             
             let newDocsArr = await auditDocs(id, req)
 
-            newDocsArr.forEach( model => update[`${pluralize(capitalize(model[0], 0, 1))}`] = model[1] )
+            newDocsArr.forEach( model => update[`${model[0]}`] = model[1] )
             
             let genreArr = genre.split(',').map( genre => {
                 return genre.trim()
@@ -167,8 +168,7 @@ module.exports = {
             update["TomatoCritic"] = tom_crit
             update["Genres"] = genreArr
                 
-
-            let movieNew = await Movie.findByIdAndUpdate(
+            let movieNew = await movies.findByIdAndUpdate(
                 id, 
                 update,
                 {

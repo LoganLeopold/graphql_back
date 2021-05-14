@@ -4,30 +4,32 @@ const Schema = mongoose.Schema
 
 const MovieSchema = new Schema({
 
-    Name: String,
-    Director: {
-        type: Schema.Types.ObjectId,
-        ref: 'Director'
-    },
-    Actors: [
+    name: String,
+    directors: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Director'
+        }
+    ],
+    actors: [
         {
             type: Schema.Types.ObjectId,
             ref: 'Actor'
         }
     ],
-    Platforms: [
+    platforms: [
         {
             type: Schema.Types.ObjectId,
             ref: 'Platform'
         }
     ],
-    TomatoPublic: Number,
-    TomatoCritic: Number,
-    Genres: [],
+    tomatopublic: Number,
+    tomatocritic: Number,
+    genres: [],
 
 })
 
-const Movie = mongoose.model('Movie', MovieSchema)
-const MovieTC = compose.composeWithMongoose(Movie)
+const movies = mongoose.model('Movie', MovieSchema)
+const MovieTC = compose.composeWithMongoose(movies)
 
-module.exports = { MovieSchema, Movie, MovieTC }
+module.exports = { MovieSchema, movies, MovieTC }
