@@ -27,9 +27,9 @@ const MovieMutation = {
 MovieTC.addRelation(
     'directors',
     {
-        resolver: DirectorTC.getResolver('findById'),
+        resolver: DirectorTC.getResolver('findByIds'),
         prepareArgs: {
-            _ids: (source) => source.directors.map( dir => dir._id ) ,
+            _ids: (source) => source.directors.map( dir => dir ) ,
             skip: null,
             sort: null
         },
