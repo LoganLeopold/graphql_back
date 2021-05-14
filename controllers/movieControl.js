@@ -129,7 +129,7 @@ module.exports = {
 
         try {   
 
-            let movieClear = await movies.findByIdAndUpdate(
+            let movieClear = await Movie.findByIdAndUpdate(
                 id, 
                 {
                     name: '',
@@ -168,7 +168,7 @@ module.exports = {
             update["TomatoCritic"] = tom_crit
             update["Genres"] = genreArr
                 
-            let movieNew = await movies.findByIdAndUpdate(
+            let movieNew = await Movie.findByIdAndUpdate(
                 id, 
                 update,
                 {
