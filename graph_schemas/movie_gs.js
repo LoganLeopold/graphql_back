@@ -14,11 +14,33 @@ MovieTC.addResolver({
     type: MovieTC,
     resolve: async ({ source, args }) => {
 
+        /*
+        
+        There's real potential here for one resolver function to handle all the data types just seeing how this data comes in and how easy it is to change the update. 
+
+        -> data comes in
+        -> if the field is an array, use a $pull
+            -> if it's an array of normal scalars, do a pull
+            -> If it's an array of ObjectIDs do a related updated in ref model
+        -> if it's simple normal scalr, do the middle else if below
+
+        */
+
         const { field, value, movieId } = args
 
-        let movieReturn = await movies.findById(movieId)
+        let update;
 
-        return movieReturn
+        if (movies.schema.paths[`${field}`].instance == "Array") {
+            update = {$pull: { [field]: value} }
+        } else if (movies.schema.paths[`${field}`].instance == "Number" || "String") {            
+            update = {[field]: value}
+        } else {
+            console.log('untended')
+        }
+
+        let newMovie = movies.findByIdAndUpdate( movieId, update, {overwrite: false, new: true} )
+
+        return newMovie._id
 
     },
 })
