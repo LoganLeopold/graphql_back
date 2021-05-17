@@ -13,18 +13,14 @@ MovieTC.addResolver({
     description: "Take a field and update it's value based on the Mongoose schematype on the document indicated by the movieId.",
     type: MovieTC,
     resolve: async ({ source, args }) => {
-
-        /*
         
-        There's real potential here for one resolver function to handle all the data types just seeing how this data comes in and how easy it is to change the update. 
+        // There's real potential here for one resolver function to handle all the data types just seeing how this data comes in and how easy it is to change the update. 
 
-        -> data comes in
-        -> if the field is an array, use a $pull
-            -> if it's an array of normal scalars, do a pull
-            -> If it's an array of ObjectIDs do a related updated in ref model
-        -> if it's simple normal scalr, do the middle else if below
-
-        */
+        // -> data comes in
+        // -> if the field is an array, use a $pull
+        //     -> if it's an array of normal scalars, do a pull
+        //     -> If it's an array of ObjectIDs do a related updated in ref model
+        // -> if it's simple normal scalr, do the middle else if below
 
         const { field, value, movieId } = args
 
