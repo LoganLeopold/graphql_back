@@ -35,31 +35,35 @@ ActorTC.addResolver({
 })
 
 ActorTC.addResolver({
-    name: 'simpleActorsDeleteHandle',
+    name: 'simpleActorsUpdateHandle',
     args: { 
-        actorId: 'MongoID!',
-        docId: 'MongoID!', 
-        docModel: 'String!',
+        recordData: '[[String]]!',
+        currentDocumentData: '[[String]]!'
     },
     description: "Give this an actor id, document id, and document model name. It will remove the actor from the doc and remove the doc id from the appropriate model field on the actor document.",
     type: ActorTC,
     resolve: async ({ source, args }) => {
 
-        const { actorId, docId, docModel } = args
+        const { recordData, currentModelData } = args
+
+        let rDFromArray = Object.fromEntries(recordData)
+        let mDFromArray = Object.fromEntries(currentModelData)
 
         console.log(args)
+        console.log(rDFromArray)
+        console.log(mDFromArray)
 
-        let newDoc = await Mongoose.model(`${docModel}`).findByIdAndUpdate(
-            docId, 
-            {$pull: { actors: actorId }},
-            {overwrite: false, new: true}
-        )
+        // let newDoc = await Mongoose.model(`${docModel}`).findByIdAndUpdate(
+        //     docId, 
+        //     {$pull: { actors: actorId }},
+        //     {overwrite: false, new: true}
+        // )
 
-        let newActor = await actors.findByIdAndUpdate(
-            actorId,
-            {$pull: { [docModel]: actorId } },
-            {overwrite: false, new: true}
-        )
+        // let newActor = await actors.findByIdAndUpdate(
+        //     actorId,
+        //     {$pull: { [docModel]: actorId } },
+        //     {overwrite: false, new: true}
+        // )
 
         return newDoc
 
@@ -77,7 +81,8 @@ const ActorQuery = {
 };
 
 const ActorMutation = {
-    nestedAuthorDeleteHandle: ActorTC.getResolver('nestedActorsDeleteHandle'),
+    nestedActorsDeleteHandle: ActorTC.getResolver('nestedActorsDeleteHandle'),
+    simpleActorsUpdateHandle: ActorTC.getResolver('simpleActorsUpdateHandle'),
     actorCreateOne: ActorTC.getResolver('createOne'),
     actorCreateMany: ActorTC.getResolver('createMany'),
     actorUpdateById: ActorTC.getResolver('updateById'),
