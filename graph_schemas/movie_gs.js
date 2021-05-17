@@ -3,6 +3,26 @@ const { ActorTC } = require('../models/actor')
 const { DirectorTC } = require('../models/director')
 const { PlatformTC } = require('../models/platform')
 
+MovieTC.addResolver({
+    name: 'simpleMoviesDeleteHandle',
+    args: { 
+        field: 'String!',
+        value: 'String!',
+        movieId: 'MongoID!', 
+    },
+    description: "Take a field and update it's value based on the Mongoose schematype on the document indicated by the movieId.",
+    type: MovieTC,
+    resolve: async ({ source, args }) => {
+
+        const { field, value, movieId } = args
+
+        let movieReturn = await movies.findById(movieId)
+
+        return movieReturn
+
+    },
+})
+
 const MovieQuery = {
     movieById: MovieTC.getResolver('findById'),
     movieByIds: MovieTC.getResolver('findByIds'),
@@ -14,6 +34,7 @@ const MovieQuery = {
 };
 
 const MovieMutation = {
+    simpleMoviesDeleteHandle: MovieTC.getResolver('simpleMoviesDeleteHandle'),
     movieCreateOne: MovieTC.getResolver('createOne'),
     movieCreateMany: MovieTC.getResolver('createMany'),
     movieUpdateById: MovieTC.getResolver('updateById'),

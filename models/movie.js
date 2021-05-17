@@ -5,6 +5,12 @@ const Schema = mongoose.Schema
 const MovieSchema = new Schema({
 
     name: String,
+    modelName: {
+        type: String,
+        default: "movies",
+        required: '{PATH} is required!',
+        immutable: true,
+    },
     directors: [
         {
             type: Schema.Types.ObjectId,
@@ -29,7 +35,7 @@ const MovieSchema = new Schema({
 
 })
 
-const movies = mongoose.model('Movie', MovieSchema)
+const movies = mongoose.model('movies', MovieSchema)
 const MovieTC = compose.composeWithMongoose(movies)
 
 module.exports = { MovieSchema, movies, MovieTC }

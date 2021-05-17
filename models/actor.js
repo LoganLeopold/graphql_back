@@ -5,6 +5,12 @@ const Schema = mongoose.Schema
 const ActorSchema = new Schema({
     
     name: String,
+    modelName: {
+        type: String,
+        default: "actors",
+        required: '{PATH} is required!',
+        immutable: true,
+    },
     movies: [
         {
             type: Schema.Types.ObjectId,
@@ -14,7 +20,7 @@ const ActorSchema = new Schema({
     
 })
 
-const actors = mongoose.model('Actor', ActorSchema)
+const actors = mongoose.model('actors', ActorSchema)
 const ActorTC = compose.composeWithMongoose(actors)
 
 module.exports = { ActorSchema, actors, ActorTC }
