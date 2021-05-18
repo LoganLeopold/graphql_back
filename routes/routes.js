@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
 
-router.use('/actor', require('./actorRoutes.js'));
-router.use('/director', require('./directorRoutes.js'));
-router.use('/movie', require('./movieRoutes.js'));
-router.use('/platform', require('./platformRoutes.js'));
+router.use('/actors', require('./actorRoutes.js'));
+router.use('/directors', require('./directorRoutes.js'));
+router.use('/movies', require('./movieRoutes.js'));
+router.use('/platforms', require('./platformRoutes.js'));
 
 module.exports = router

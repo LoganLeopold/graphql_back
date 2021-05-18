@@ -1,6 +1,37 @@
 const { directors, DirectorTC } = require('../models/director')
 const { MovieTC } = require('../models/movie')
 
+DirectorTC.addResolver({
+    name: 'nestedDirectorsDeleteHandle',
+    args: { 
+        actorId: 'MongoID!',
+        docId: 'MongoID!', 
+        docModel: 'String!',
+    },
+    description: "Give this a director id, document id, and document model name. It will remove the actor from the doc and remove the doc id from the appropriate model field on the actor document.",
+    type: DirectorTC,
+    resolve: async ({ source, args }) => {
+
+        const { directorId, docId, docModel } = args
+
+        console.log(args)
+
+        let newDoc = await Mongoose.model(`${docModel}`).findByIdAndUpdate(
+            docId, 
+            {$pull: { directors: directorId }},
+            {overwrite: false, new: true}
+        )
+
+        let newDirector = await directors.findByIdAndUpdate(
+            directorId,
+            {$pull: { [docModel]: directorId } },
+            {overwrite: false, new: true}
+        )
+
+        return newDoc
+    },
+})
+
 const DirectorQuery = {
     directorById: DirectorTC.getResolver('findById'),
     directorByIds: DirectorTC.getResolver('findByIds'),
@@ -12,6 +43,7 @@ const DirectorQuery = {
 };
 
 const DirectorMutation = {
+    nestedDirectorsDeleteHandle: DirectorTC.getResolver('nestedDirectorsDeleteHandle'),
     directorCreateOne: DirectorTC.getResolver('createOne'),
     directorCreateMany: DirectorTC.getResolver('createMany'),
     directorUpdateById: DirectorTC.getResolver('updateById'),

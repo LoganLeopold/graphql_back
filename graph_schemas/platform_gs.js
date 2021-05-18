@@ -1,6 +1,37 @@
 const { platforms, PlatformTC } = require('../models/platform')
 const { MovieTC } = require('../models/movie')
 
+PlatformTC.addResolver({
+    name: 'nestedPlatformsDeleteHandle',
+    args: { 
+        actorId: 'MongoID!',
+        docId: 'MongoID!', 
+        docModel: 'String!',
+    },
+    description: "Give this a director id, document id, and document model name. It will remove the actor from the doc and remove the doc id from the appropriate model field on the actor document.",
+    type: DirectorTC,
+    resolve: async ({ source, args }) => {
+
+        const { platformId, docId, docModel } = args
+
+        console.log(args)
+
+        let newDoc = await Mongoose.model(`${docModel}`).findByIdAndUpdate(
+            docId, 
+            {$pull: { platforms: platformId }},
+            {overwrite: false, new: true}
+        )
+
+        let newPlatform = await platforms.findByIdAndUpdate(
+            platformId,
+            {$pull: { [docModel]: platformId } },
+            {overwrite: false, new: true}
+        )
+
+        return newDoc
+    },
+})
+
 const PlatformQuery = {
     platformById: PlatformTC.getResolver('findById'),
     platformByIds: PlatformTC.getResolver('findByIds'),
@@ -12,6 +43,7 @@ const PlatformQuery = {
 };
 
 const PlatformMutation = {
+    nestedPlatformsDeleteHandle: PlatformTC.getResolver('nestedPlatformsDeleteHandle'),
     platformCreateOne: PlatformTC.getResolver('createOne'),
     platformCreateMany: PlatformTC.getResolver('createMany'),
     platformUpdateById: PlatformTC.getResolver('updateById'),
