@@ -9,7 +9,7 @@ PlatformTC.addResolver({
         docModel: 'String!',
     },
     description: "Give this a director id, document id, and document model name. It will remove the actor from the doc and remove the doc id from the appropriate model field on the actor document.",
-    type: DirectorTC,
+    type: PlatformTC,
     resolve: async ({ source, args }) => {
 
         const { platformId, docId, docModel } = args
