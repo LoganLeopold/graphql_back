@@ -3,8 +3,9 @@ const { ActorTC } = require('../models/actor')
 const { DirectorTC } = require('../models/director')
 const { PlatformTC } = require('../models/platform')
 
+/* This is for fields that just have key value pairs because simple, non-related-doc fields are the only ones which will be edited on the smae page. */
 MovieTC.addResolver({
-    name: 'simpleMoviesDeleteHandle',
+    name: 'simpleMoviesUpdateHandle',
     args: { 
         field: 'String!',
         value: 'String!',
@@ -16,11 +17,14 @@ MovieTC.addResolver({
         
         // There's real potential here for one resolver function to handle all the data types just seeing how this data comes in and how easy it is to change the update. 
 
+        // The argument against is that so many non-null args to allow for all the options is not declarative and in support of the type system/expectations built into GraphQL. 
+
         // -> data comes in
-        // -> if the field is an array, use a $pull
-        //     -> if it's an array of normal scalars, do a pull
-        //     -> If it's an array of ObjectIDs do a related updated in ref model
-        // -> if it's simple normal scalr, do the middle else if below
+        // -> if (args. firstArg or secondArg .modelName): use a nested $pull
+        // -> if (args .firstArg or secondArg .field):
+            // Use below logic ('${field}') to carry out the following conditional:
+                // -> an array of normal scalars, do a pull
+                // -> if it's simple normal scalar, do the middle else if below
 
         const { field, value, movieId } = args
 
@@ -52,7 +56,7 @@ const MovieQuery = {
 };
 
 const MovieMutation = {
-    simpleMoviesDeleteHandle: MovieTC.getResolver('simpleMoviesDeleteHandle'),
+    simpleMoviesUpdateHandle: MovieTC.getResolver('simpleMoviesUpdateHandle'),
     movieCreateOne: MovieTC.getResolver('createOne'),
     movieCreateMany: MovieTC.getResolver('createMany'),
     movieUpdateById: MovieTC.getResolver('updateById'),

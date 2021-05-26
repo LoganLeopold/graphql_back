@@ -4,7 +4,7 @@ const { MovieTC } = require('../models/movie')
 DirectorTC.addResolver({
     name: 'nestedDirectorsDeleteHandle',
     args: { 
-        actorId: 'MongoID!',
+        directorId: 'MongoID!',
         docId: 'MongoID!', 
         docModel: 'String!',
     },

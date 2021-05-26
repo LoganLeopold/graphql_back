@@ -4,7 +4,7 @@ const { MovieTC } = require('../models/movie')
 PlatformTC.addResolver({
     name: 'nestedPlatformsDeleteHandle',
     args: { 
-        actorId: 'MongoID!',
+        platformId: 'MongoID!',
         docId: 'MongoID!', 
         docModel: 'String!',
     },

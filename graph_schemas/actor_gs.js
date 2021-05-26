@@ -34,37 +34,40 @@ ActorTC.addResolver({
     },
 })
 
-ActorTC.addResolver({
-    name: 'simpleActorsDeleteHandle',
-    args: { 
-        actorId: 'MongoID!',
-        docId: 'MongoID!', 
-        docModel: 'String!',
-    },
-    description: "Give this an actor id, document id, and document model name. It will remove the actor from the doc and remove the doc id from the appropriate model field on the actor document.",
-    type: ActorTC,
-    resolve: async ({ source, args }) => {
 
-        const { actorId, docId, docModel } = args
+/* There wouldn't be an actors nested update since in the UI we're not updating on the same page, but navigating to that page to update the subdoc. */
 
-        console.log(args)
+// ActorTC.addResolver({
+//     name: 'nestedActorsUpdateHandle',
+//     args: { 
+//         actorId: 'MongoID!',
+//         docId: 'MongoID!', 
+//         docModel: 'String!',
+//     },
+//     description: "",
+//     type: ActorTC,
+//     resolve: async ({ source, args }) => {
 
-        let newDoc = await Mongoose.model(`${docModel}`).findByIdAndUpdate(
-            docId, 
-            {$pull: { actors: actorId }},
-            {overwrite: false, new: true}
-        )
+//         const { actorId, docId, docModel } = args
 
-        let newActor = await actors.findByIdAndUpdate(
-            actorId,
-            {$pull: { [docModel]: actorId } },
-            {overwrite: false, new: true}
-        )
+//         console.log(args)
 
-        return newDoc
+//         let newDoc = await Mongoose.model(`${docModel}`).findByIdAndUpdate(
+//             docId, 
+//             {$pull: { actors: actorId }},
+//             {overwrite: false, new: true}
+//         )
 
-    },
-})
+//         let newActor = await actors.findByIdAndUpdate(
+//             actorId,
+//             {$pull: { [docModel]: actorId } },
+//             {overwrite: false, new: true}
+//         )
+
+//         return newDoc
+
+//     },
+// })
 
 const ActorQuery = {
     actorById: ActorTC.getResolver('findById'),
