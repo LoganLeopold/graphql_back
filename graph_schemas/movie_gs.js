@@ -28,19 +28,27 @@ MovieTC.addResolver({
 
         const { field, value, movieId } = args
 
+        console.log(field, value, movieId)
+
         let update;
 
         if (movies.schema.paths[`${field}`].instance == "Array") {
             update = {$pull: { [field]: value} }
-        } else if (movies.schema.paths[`${field}`].instance == "Number" || "String") {            
+        } else if (movies.schema.paths[`${field}`].instance == "Number" || "String") {   
+            // console.log("NUM OR STRING")         
             update = {[field]: value}
         } else {
             console.log('untended')
         }
 
-        let newMovie = movies.findByIdAndUpdate( movieId, update, {overwrite: false, new: true} )
-
-        return newMovie._id
+        try {
+            let newMovie = await movies.findByIdAndUpdate( movieId, update, {overwrite: false, new: true} )
+            console.log(newMovie)
+            return newMovie
+        } catch (err) {
+            console.log(err)
+        }
+        
 
     },
 })
