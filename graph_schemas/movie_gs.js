@@ -4,8 +4,9 @@ const { DirectorTC } = require('../models/director')
 const { PlatformTC } = require('../models/platform')
 const Mongoose = require('mongoose')
 
+/* For NewRecords.js on the front to handle adding to document field arrays */
 MovieTC.addResolver({
-    name: 'moviesAddRelatedRecHandle',
+    name: 'moviesAddRecHandle',
     args: { 
         newRecName: 'String!',
         newRecModel: 'String!',
@@ -17,29 +18,39 @@ MovieTC.addResolver({
 
         const { newRecName, newRecModel, movieId } = args
 
-        console.log( newRecName, newRecModel, movieId, "ARGS" )
-
         try {
 
-            let newRec = await Mongoose.model(newRecModel).findOneAndUpdate( 
-                {name: newRecName.trim()}, 
-                {
-                    $push: {movies: movieId},
-                    $setOnInsert: {
-                        name: newRecName.trim(),
-                    }
-                },
-                {upsert: true, new: true, setDefaultsOnInsert: true}
-            )
+            // Object.keys(Mongoose.models).includes(newRecModel)
+            if (Object.keys(Mongoose.models).includes(newRecModel)) {           
 
-            console.log(newRec, "NEWREC")
+                let newRec = await Mongoose.model(newRecModel).findOneAndUpdate( 
+                    {name: newRecName.trim()}, 
+                    {
+                        $push: {movies: movieId},
+                        $setOnInsert: {
+                            name: newRecName.trim(),
+                        }
+                    },
+                    {upsert: true, new: true, setDefaultsOnInsert: true}
+                )
 
-            let updatedMovie = await movies.findByIdAndUpdate(
-                movieId,
-                {$push: {[newRecModel]: newRec._id}},  
-            )
+                let updatedMovie = await movies.findByIdAndUpdate(
+                    movieId,
+                    {$push: {[newRecModel]: newRec._id}},  
+                )
+                
+                return updatedMovie
             
-            return updatedMovie
+            } else {
+
+                let updatedMovie = await movies.findByIdAndUpdate(
+                    movieId,
+                    {$push: {[newRecModel]: newRecName}},  
+                )
+                
+                return updatedMovie
+
+            }
 
         } catch (err) {
             console.log(err)
@@ -49,7 +60,7 @@ MovieTC.addResolver({
     },
 })
 
-/* Describe____________________ */
+/* For deleting referene document records */
 MovieTC.addResolver({
     name: 'moviesDeleteRelatedRecHandle',
     args: { 
@@ -90,15 +101,17 @@ MovieTC.addResolver({
     },
 })
 
+/* Realized this won't handle simple record arrays (that aren't documents) appropriately */
 /* This is for fields that just have key value pairs because simple, non-related-doc fields are the only ones which will be edited on the smae page. */
 MovieTC.addResolver({
     name: 'simpleMoviesUpdateHandle',
     args: { 
         field: 'String!',
-        value: 'String!',
+        deleteValue: 'String!',
+        newValue: 'String',
         movieId: 'MongoID!', 
     },
-    description: "Take a field and update it's value based on the Mongoose schematype on the document indicated by the movieId.",
+    description: "Take a field (from the SimpleRecord.js subDoc pro) and update it's value based on the Mongoose schematype on the document indicated by the movieId.",
     type: MovieTC,
     resolve: async ({ source, args }) => {
         
@@ -113,18 +126,23 @@ MovieTC.addResolver({
                 // -> an array of normal scalars, do a pull
                 // -> if it's simple normal scalar, do the middle else if below
 
-        const { field, value, movieId } = args
-
-        console.log(field, value, movieId)
+        const { field, deleteValue, newValue, movieId } = args
 
         let update;
 
         if (movies.schema.paths[`${field}`].instance == "Array") {
-            // This is more nuanced because it may be a pull or update. Will need to come back to address this.s 
-            update = {$pull: { [field]: value} }
-        } else if (movies.schema.paths[`${field}`].instance == "Number" || "String") {   
-            // console.log("NUM OR STRING")         
-            update = {[field]: value}
+            //Assuming all newValues are different than the current record because of submission handling:
+                if (!newValue) { // -> if there is a deleteValue and no newValue we do a pull with no push 
+                    update = {$pull: { [field]: deleteValue} }
+                }
+                else {// -> if there is a deleteValue and a newValue we do a pull ~and~ a push 
+                    update = {
+                        $pull: { [field]: deleteValue}, 
+                        $push: { [field]: newValue }
+                    }
+                }
+        } else if (movies.schema.paths[`${field}`].instance == "Number" || "String") {          
+            update = {[field]: newValue}
         } else {
             console.log('untended')
         }
@@ -152,7 +170,7 @@ const MovieQuery = {
 
 const MovieMutation = {
     simpleMoviesUpdateHandle: MovieTC.getResolver('simpleMoviesUpdateHandle'),
-    moviesAddRelatedRecHandle: MovieTC.getResolver('moviesAddRelatedRecHandle'),
+    moviesAddRecHandle: MovieTC.getResolver('moviesAddRecHandle'),
     moviesDeleteRelatedRecHandle: MovieTC.getResolver('moviesDeleteRelatedRecHandle'),
     movieCreateOne: MovieTC.getResolver('createOne'),
     movieCreateMany: MovieTC.getResolver('createMany'),
