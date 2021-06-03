@@ -2,6 +2,93 @@ const { movies, MovieTC } = require('../models/movie')
 const { ActorTC } = require('../models/actor')
 const { DirectorTC } = require('../models/director')
 const { PlatformTC } = require('../models/platform')
+const Mongoose = require('mongoose')
+
+MovieTC.addResolver({
+    name: 'moviesAddRelatedRecHandle',
+    args: { 
+        newRecName: 'String!',
+        newRecModel: 'String!',
+        movieId: 'MongoID!', 
+    },
+    description: "Use new rec name to findoneandupdate or upsert a new document for newRecModel on the movie with movieId. Return the new MovieTC",
+    type: MovieTC,
+    resolve: async ({ source, args }) => {
+
+        const { newRecName, newRecModel, movieId } = args
+
+        console.log( newRecName, newRecModel, movieId, "ARGS" )
+
+        try {
+
+            let newRec = await Mongoose.model(newRecModel).findOneAndUpdate( 
+                {name: newRecName.trim()}, 
+                {
+                    $push: {movies: movieId},
+                    $setOnInsert: {
+                        name: newRecName.trim(),
+                    }
+                },
+                {upsert: true, new: true, setDefaultsOnInsert: true}
+            )
+
+            console.log(newRec, "NEWREC")
+
+            let updatedMovie = await movies.findByIdAndUpdate(
+                movieId,
+                {$push: {[newRecModel]: newRec._id}},  
+            )
+            
+            return updatedMovie
+
+        } catch (err) {
+            console.log(err)
+        }
+        
+
+    },
+})
+
+/* Describe____________________ */
+MovieTC.addResolver({
+    name: 'moviesDeleteRelatedRecHandle',
+    args: { 
+        recId: 'MongoID!',
+        recModel: 'String!',
+        movieId: 'MongoID!', 
+    },
+    description: "Use new recId to findoneandupdate the record by pulling the movieId out of its movies array, and pull the recId out of reference array in the movie with movieId the same way.",
+    type: MovieTC,
+    resolve: async ({ source, args }) => {
+
+        const { recId, recModel, movieId } = args //Incoming is recordId to be altered/removed from movie, model name of record, and Id of movie being altered.
+
+        console.log( recId, recModel, movieId, "ARGS" )
+
+        try {
+
+            let newRec = await Mongoose.model(recModel).findByIdAndUpdate( 
+                recId, 
+                {$pull: {movies: movieId }},
+                {new: true}
+            )
+
+            console.log(newRec, "NEWREC")
+
+            let updatedMovie = await movies.findByIdAndUpdate(
+                movieId,
+                {$pull: {[recModel]: recId}},  
+            )
+            
+            return updatedMovie
+
+        } catch (err) {
+            console.log(err)
+        }
+        
+
+    },
+})
 
 /* This is for fields that just have key value pairs because simple, non-related-doc fields are the only ones which will be edited on the smae page. */
 MovieTC.addResolver({
@@ -33,6 +120,7 @@ MovieTC.addResolver({
         let update;
 
         if (movies.schema.paths[`${field}`].instance == "Array") {
+            // This is more nuanced because it may be a pull or update. Will need to come back to address this.s 
             update = {$pull: { [field]: value} }
         } else if (movies.schema.paths[`${field}`].instance == "Number" || "String") {   
             // console.log("NUM OR STRING")         
@@ -48,7 +136,6 @@ MovieTC.addResolver({
         } catch (err) {
             console.log(err)
         }
-        
 
     },
 })
@@ -65,6 +152,8 @@ const MovieQuery = {
 
 const MovieMutation = {
     simpleMoviesUpdateHandle: MovieTC.getResolver('simpleMoviesUpdateHandle'),
+    moviesAddRelatedRecHandle: MovieTC.getResolver('moviesAddRelatedRecHandle'),
+    moviesDeleteRelatedRecHandle: MovieTC.getResolver('moviesDeleteRelatedRecHandle'),
     movieCreateOne: MovieTC.getResolver('createOne'),
     movieCreateMany: MovieTC.getResolver('createMany'),
     movieUpdateById: MovieTC.getResolver('updateById'),

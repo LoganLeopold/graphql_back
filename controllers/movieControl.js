@@ -3,7 +3,7 @@ const { movies: Movie } = require("../models/movie")
 const { directors: Director } = require("../models/director")
 const { platforms: Platform } = require("../models/platform")
 const { actors: Actor} = require("../models/actor")
-const { auditDocs, capitalize, depluralize, pluralize } = require('../utilities');
+const { auditDocs } = require('../utilities');
 
 module.exports = {
 
@@ -62,7 +62,7 @@ module.exports = {
                                 name: dir.trim(),
                             }
                         },
-                        {upsert: true, new: true}
+                        {upsert: true, new: true, setDefaultsOnInsert: true}
                     )
                     return dirIns._id
                 }))
@@ -76,7 +76,7 @@ module.exports = {
                                 name: act.trim(),
                             }
                         },
-                        {upsert: true, new: true}
+                        {upsert: true, new: true, setDefaultsOnInsert: true}
                     )
                     return actorIns._id
                 }))
@@ -90,7 +90,7 @@ module.exports = {
                             name: plat.trim(),
                         }
                     },
-                       {upsert: true, new: true} 
+                       {upsert: true, new: true, setDefaultsOnInsert: true} 
                    )
                    return platformIns._id
                }))
@@ -141,7 +141,8 @@ module.exports = {
                     genres: []
                 },
                 {
-                    new: true
+                    new: true,
+                    setDefaultsOnInsert: true,
                 }
             )
 
