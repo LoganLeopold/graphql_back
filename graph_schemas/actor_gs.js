@@ -69,6 +69,62 @@ ActorTC.addResolver({
 //     },
 // })
 
+/* This is for fields that just have key value pairs (not reference documents) because simple, non-related-doc fields are the only ones which will be edited on the smae page. */
+ActorTC.addResolver({
+    name: 'simpleActorsUpdateHandle',
+    args: { 
+        field: 'String!',
+        deleteValue: 'String!',
+        newValue: 'String',
+        actorId: 'MongoID!', 
+    },
+    description: "Take a field (from the SimpleRecord.js subDoc prop) and update it's value based on the Mongoose schematype on the document indicated by the actorId.",
+    type: MovieTC,
+    resolve: async ({ source, args }) => {
+        
+        // There's real potential here for one resolver function to handle all the data types just seeing how this data comes in and how easy it is to change the update. 
+
+        // The argument against is that so many non-null args to allow for all the options is not declarative and in support of the type system/expectations built into GraphQL. 
+
+        // -> data comes in
+        // -> if (args. firstArg or secondArg .modelName): use a nested $pull
+        // -> if (args .firstArg or secondArg .field):
+            // Use below logic ('${field}') to carry out the following conditional:
+                // -> an array of normal scalars, do a pull
+                // -> if it's simple normal scalar, do the middle else if below
+
+        const { field, deleteValue, newValue, actorId } = args
+
+        let update;
+
+        if (actors.schema.paths[`${field}`].instance == "Array") {
+            //Assuming all newValues are different than the current record because of submission handling:
+                if (!newValue) { // -> if there is a deleteValue and no newValue we do a pull with no push 
+                    update = {$pull: { [field]: deleteValue} }
+                }
+                else {// -> if there is a deleteValue and a newValue we do a pull ~and~ a push 
+                    update = {
+                        $pull: { [field]: deleteValue}, 
+                        $push: { [field]: newValue }
+                    }
+                }
+        } else if (actors.schema.paths[`${field}`].instance == "Number" || "String") {          
+            update = {[field]: newValue}
+        } else {
+            console.log('untended')
+        }
+
+        try {
+            let newActor = await actors.findByIdAndUpdate( actorId, update, {overwrite: false, new: true} )
+            console.log(newActor)
+            return newActor
+        } catch (err) {
+            console.log(err)
+        }
+
+    },
+})
+
 const ActorQuery = {
     actorById: ActorTC.getResolver('findById'),
     actorByIds: ActorTC.getResolver('findByIds'),
@@ -81,6 +137,7 @@ const ActorQuery = {
 
 const ActorMutation = {
     nestedAuthorDeleteHandle: ActorTC.getResolver('nestedActorsDeleteHandle'),
+    simpleActorsUpdateHandle: ActorTC.getResolver('simpleActorsUpdateHandle'),
     actorCreateOne: ActorTC.getResolver('createOne'),
     actorCreateMany: ActorTC.getResolver('createMany'),
     actorUpdateById: ActorTC.getResolver('updateById'),

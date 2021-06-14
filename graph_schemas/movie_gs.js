@@ -101,8 +101,7 @@ MovieTC.addResolver({
     },
 })
 
-/* Realized this won't handle simple record arrays (that aren't documents) appropriately */
-/* This is for fields that just have key value pairs because simple, non-related-doc fields are the only ones which will be edited on the smae page. */
+/* This is for fields that just have key value pairs (not reference documents) because simple, non-related-doc fields are the only ones which will be edited on the smae page. */
 MovieTC.addResolver({
     name: 'simpleMoviesUpdateHandle',
     args: { 
@@ -111,7 +110,7 @@ MovieTC.addResolver({
         newValue: 'String',
         movieId: 'MongoID!', 
     },
-    description: "Take a field (from the SimpleRecord.js subDoc pro) and update it's value based on the Mongoose schematype on the document indicated by the movieId.",
+    description: "Take a field (from the SimpleRecord.js subDoc prop) and update it's value based on the Mongoose schematype on the document indicated by the movieId.",
     type: MovieTC,
     resolve: async ({ source, args }) => {
         
